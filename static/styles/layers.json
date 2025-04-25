@@ -1,0 +1,105 @@
+[
+  {
+    "id": "neighborhood",
+    "name": "الأحياء",
+    "filename": "data/neighborhood.geojson",
+    "geometry_type": "Polygon",
+    "style": {
+      "fillColor": "#E5F5E0",
+      "color": "#31A354",
+      "weight": 2,
+      "opacity": 1,
+      "fillOpacity": 0.6
+    }
+  },
+  {
+    "id": "electricity",
+    "name": "الكهرباء",
+    "filename": "data/electricity.geojson",
+    "geometry_type": "Polygon",
+    "style": {
+      "fillColor": "#FFEDA0",
+      "color": "#FEB24C",
+      "weight": 1,
+      "opacity": 1,
+      "fillOpacity": 0.7
+    }
+  },
+  {
+    "id": "waste_water",
+    "name": "الصرف الصحي",
+    "filename": "data/waste_water.geojson",
+    "geometry_type": "Polygon",
+    "style": {
+      "fillColor": "#BFD3E6",
+      "color": "#6BAED6",
+      "weight": 1,
+      "opacity": 1,
+      "fillOpacity": 0.7
+    }
+  },
+  {
+    "id": "telecom",
+    "name": "الاتصالات",
+    "filename": "data/telecom.geojson",
+    "geometry_type": "Polygon",
+    "style": {
+      "fillColor": "#EFEDF5",
+      "color": "#9E9AC8",
+      "weight": 1,
+      "opacity": 1,
+      "fillOpacity": 0.7
+    }
+  },
+  {
+    "id": "housing",
+    "name": "المساكن",
+    "filename": "data/housing.geojson",
+    "geometry_type": "Polygon",
+    "style": {
+      "fillColor": "#FEE0D2",
+      "color": "#FC9272",
+      "weight": 1,
+      "opacity": 1,
+      "fillOpacity": 0.7
+    }
+  },
+  {
+    "id": "clean_water",
+    "name": "مياه الشرب",
+    "filename": "data/clean_water.geojson",
+    "geometry_type": "Polygon",
+    "style": {
+      "fillColor": "#D1E5F0",
+      "color": "#4292C6",
+      "weight": 1,
+      "opacity": 1,
+      "fillOpacity": 0.7
+    }
+  },
+  {
+    "id": "swm",
+    "name": "إدارة النفايات الصلبة",
+    "filename": "data/swm.geojson",
+    "geometry_type": "Polygon",
+    "style": {
+      "fillColor": "#E5F5E0",
+      "color": "#41AB5D",
+      "weight": 1,
+      "opacity": 1,
+      "fillOpacity": 0.7
+    }
+  },
+  {
+    "id": "routes",
+    "name": "الطرق",
+    "filename": "data/routes.geojson",
+    "geometry_type": "LineString",
+    "style": {
+      "color": "#636363",
+      "weight": 1.5,
+      "dashArray": "5, 5",
+      "opacity": 0.7
+    }
+  }
+]

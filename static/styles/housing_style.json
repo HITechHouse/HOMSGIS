@@ -1,0 +1,79 @@
+{
+  "type": "thematic",
+  "geometry_type": "MultiPolygon",
+  "property_styles": {
+    "color": {
+      "type": "categorical",
+      "field": "color",
+      "values": {
+        "#F7F7F7": {
+          "fillColor": "#F7F7F7",
+          "color": "#000000",
+          "weight": 1,
+          "opacity": 1,
+          "fillOpacity": 0.7
+        },
+        "#D9D9D9": {
+          "fillColor": "#D9D9D9",
+          "color": "#000000",
+          "weight": 1,
+          "opacity": 1,
+          "fillOpacity": 0.7
+        },
+        "#BDBDBD": {
+          "fillColor": "#BDBDBD",
+          "color": "#000000",
+          "weight": 1,
+          "opacity": 1,
+          "fillOpacity": 0.7
+        },
+        "#969696": {
+          "fillColor": "#969696",
+          "color": "#000000",
+          "weight": 1,
+          "opacity": 1,
+          "fillOpacity": 0.7
+        },
+        "#737373": {
+          "fillColor": "#737373",
+          "color": "#000000",
+          "weight": 1,
+          "opacity": 1,
+          "fillOpacity": 0.7
+        },
+        "#525252": {
+          "fillColor": "#525252",
+          "color": "#000000",
+          "weight": 1,
+          "opacity": 1,
+          "fillOpacity": 0.7
+        },
+        "#252525": {
+          "fillColor": "#252525",
+          "color": "#000000",
+          "weight": 1,
+          "opacity": 1,
+          "fillOpacity": 0.7
+        }
+      }
+    }
+  },
+  "default_style": {
+    "fillColor": "#CCCCCC",
+    "color": "#000000",
+    "weight": 1,
+    "opacity": 1,
+    "fillOpacity": 0.7
+  },
+  "layer_name": "المساكن",
+  "property": "housing",
+  "labels": {
+    "fields": [
+      "arabic_label"
+    ],
+    "font": "14px Arial",
+    "color": "#333333",
+    "haloColor": "#ffffff",
+    "haloWidth": 2
+  }
+}

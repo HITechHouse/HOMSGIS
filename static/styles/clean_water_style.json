@@ -1,0 +1,79 @@
+{
+  "type": "thematic",
+  "geometry_type": "MultiPolygon",
+  "property_styles": {
+    "color": {
+      "type": "categorical",
+      "field": "color",
+      "values": {
+        "#EFF3FF": {
+          "fillColor": "#EFF3FF",
+          "color": "#000000",
+          "weight": 1,
+          "opacity": 1,
+          "fillOpacity": 0.7
+        },
+        "#C6DBEF": {
+          "fillColor": "#C6DBEF",
+          "color": "#000000",
+          "weight": 1,
+          "opacity": 1,
+          "fillOpacity": 0.7
+        },
+        "#9ECAE1": {
+          "fillColor": "#9ECAE1",
+          "color": "#000000",
+          "weight": 1,
+          "opacity": 1,
+          "fillOpacity": 0.7
+        },
+        "#6BAED6": {
+          "fillColor": "#6BAED6",
+          "color": "#000000",
+          "weight": 1,
+          "opacity": 1,
+          "fillOpacity": 0.7
+        },
+        "#4292C6": {
+          "fillColor": "#4292C6",
+          "color": "#000000",
+          "weight": 1,
+          "opacity": 1,
+          "fillOpacity": 0.7
+        },
+        "#2171B5": {
+          "fillColor": "#2171B5",
+          "color": "#000000",
+          "weight": 1,
+          "opacity": 1,
+          "fillOpacity": 0.7
+        },
+        "#084594": {
+          "fillColor": "#084594",
+          "color": "#000000",
+          "weight": 1,
+          "opacity": 1,
+          "fillOpacity": 0.7
+        }
+      }
+    }
+  },
+  "default_style": {
+    "fillColor": "#CCCCCC",
+    "color": "#000000",
+    "weight": 1,
+    "opacity": 1,
+    "fillOpacity": 0.7
+  },
+  "layer_name": "مياه الشرب",
+  "property": "waterSupply",
+  "labels": {
+    "fields": [
+      "arabic_label"
+    ],
+    "font": "14px Arial",
+    "color": "#333333",
+    "haloColor": "#ffffff",
+    "haloWidth": 2
+  }
+}

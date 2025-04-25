@@ -1,0 +1,89 @@
+{
+  "type": "mxd_style",
+  "geometry_type": "Polygon",
+  "label_field": "ADM4_NAME_",
+  "default_style": {
+    "fillColor": "#E5F5E0",
+    "color": "#31A354",
+    "weight": 2,
+    "opacity": 1,
+    "fillOpacity": 0.6
+  },
+  "render_properties": {
+    "opacity": 1,
+    "fillOpacity": 0.6
+  },
+  "layer_name": "الأحياء",
+  "thematic": true,
+  "thematic_property": "OverAllIndicator",
+  "property_styles": {
+    "OverAllIndicator": {
+      "type": "range",
+      "field": "OverAllIndicator",
+      "ranges": [
+        {
+          "min": 0,
+          "max": 20,
+          "style": {
+            "fillColor": "#edf8e9",
+            "color": "#31A354",
+            "weight": 1,
+            "opacity": 1,
+            "fillOpacity": 0.7
+          }
+        },
+        {
+          "min": 20,
+          "max": 40,
+          "style": {
+            "fillColor": "#c7e9c0",
+            "color": "#31A354",
+            "weight": 1,
+            "opacity": 1,
+            "fillOpacity": 0.7
+          }
+        },
+        {
+          "min": 40,
+          "max": 60,
+          "style": {
+            "fillColor": "#a1d99b",
+            "color": "#31A354",
+            "weight": 1,
+            "opacity": 1,
+            "fillOpacity": 0.7
+          }
+        },
+        {
+          "min": 60,
+          "max": 80,
+          "style": {
+            "fillColor": "#74c476",
+            "color": "#31A354",
+            "weight": 1,
+            "opacity": 1,
+            "fillOpacity": 0.7
+          }
+        },
+        {
+          "min": 80,
+          "max": 100,
+          "style": {
+            "fillColor": "#31a354",
+            "color": "#006d2c",
+            "weight": 1,
+            "opacity": 1,
+            "fillOpacity": 0.7
+          }
+        }
+      ]
+    }
+  },
+  "labels": {
+    "fields": ["ADM4_NAME_", "arabic_label"],
+    "font": "14px Cairo",
+    "color": "#333333",
+    "haloColor": "#ffffff",
+    "haloWidth": 2
+  }
+}

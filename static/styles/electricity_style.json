@@ -1,0 +1,79 @@
+{
+  "type": "thematic",
+  "geometry_type": "MultiPolygon",
+  "property_styles": {
+    "color": {
+      "type": "categorical",
+      "field": "color",
+      "values": {
+        "#FFFFB2": {
+          "fillColor": "#FFFFB2",
+          "color": "#000000",
+          "weight": 1,
+          "opacity": 1,
+          "fillOpacity": 0.7
+        },
+        "#FED976": {
+          "fillColor": "#FED976",
+          "color": "#000000",
+          "weight": 1,
+          "opacity": 1,
+          "fillOpacity": 0.7
+        },
+        "#FEB24C": {
+          "fillColor": "#FEB24C",
+          "color": "#000000",
+          "weight": 1,
+          "opacity": 1,
+          "fillOpacity": 0.7
+        },
+        "#FD8D3C": {
+          "fillColor": "#FD8D3C",
+          "color": "#000000",
+          "weight": 1,
+          "opacity": 1,
+          "fillOpacity": 0.7
+        },
+        "#FC4E2A": {
+          "fillColor": "#FC4E2A",
+          "color": "#000000",
+          "weight": 1,
+          "opacity": 1,
+          "fillOpacity": 0.7
+        },
+        "#E31A1C": {
+          "fillColor": "#E31A1C",
+          "color": "#000000",
+          "weight": 1,
+          "opacity": 1,
+          "fillOpacity": 0.7
+        },
+        "#B10026": {
+          "fillColor": "#B10026",
+          "color": "#000000",
+          "weight": 1,
+          "opacity": 1,
+          "fillOpacity": 0.7
+        }
+      }
+    }
+  },
+  "default_style": {
+    "fillColor": "#CCCCCC",
+    "color": "#000000",
+    "weight": 1,
+    "opacity": 1,
+    "fillOpacity": 0.7
+  },
+  "layer_name": "الكهرباء",
+  "property": "power",
+  "labels": {
+    "fields": [
+      "arabic_label"
+    ],
+    "font": "14px Arial",
+    "color": "#333333",
+    "haloColor": "#ffffff",
+    "haloWidth": 2
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "type": "thematic",
+  "geometry_type": "MultiPolygon",
+  "property_styles": {
+    "color": {
+      "type": "categorical",
+      "field": "color",
+      "values": {
+        "#F1EEF6": {
+          "fillColor": "#F1EEF6",
+          "color": "#000000",
+          "weight": 1,
+          "opacity": 1,
+          "fillOpacity": 0.7
+        },
+        "#D4B9DA": {
+          "fillColor": "#D4B9DA",
+          "color": "#000000",
+          "weight": 1,
+          "opacity": 1,
+          "fillOpacity": 0.7
+        },
+        "#C994C7": {
+          "fillColor": "#C994C7",
+          "color": "#000000",
+          "weight": 1,
+          "opacity": 1,
+          "fillOpacity": 0.7
+        },
+        "#DF65B0": {
+          "fillColor": "#DF65B0",
+          "color": "#000000",
+          "weight": 1,
+          "opacity": 1,
+          "fillOpacity": 0.7
+        },
+        "#E7298A": {
+          "fillColor": "#E7298A",
+          "color": "#000000",
+          "weight": 1,
+          "opacity": 1,
+          "fillOpacity": 0.7
+        },
+        "#CE1256": {
+          "fillColor": "#CE1256",
+          "color": "#000000",
+          "weight": 1,
+          "opacity": 1,
+          "fillOpacity": 0.7
+        },
+        "#91003F": {
+          "fillColor": "#91003F",
+          "color": "#000000",
+          "weight": 1,
+          "opacity": 1,
+          "fillOpacity": 0.7
+        }
+      }
+    }
+  },
+  "default_style": {
+    "fillColor": "#CCCCCC",
+    "color": "#000000",
+    "weight": 1,
+    "opacity": 1,
+    "fillOpacity": 0.7
+  },
+  "layer_name": "الصرف الصحي",
+  "property": "swage",
+  "labels": {
+    "fields": [
+      "arabic_label"
+    ],
+    "font": "14px Arial",
+    "color": "#333333",
+    "haloColor": "#ffffff",
+    "haloWidth": 2
+  }
+}

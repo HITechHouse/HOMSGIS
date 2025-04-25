@@ -1,0 +1,30 @@
+{
+  "type": "default",
+  "geometry_type": "MultiPolygon",
+  "property_styles": {},
+  "default_style": {
+    "weight": 1,
+    "opacity": 1,
+    "fillOpacity": 0.7,
+    "fillColor": "#3388ff",
+    "color": "#000000"
+  },
+  "layer_name": "nieghborhood",
+  "original_name": "nieghborhood",
+  "labels": {
+    "fields": [
+      "arabic_label",
+      "name",
+      "label",
+      "NAME",
+      "LABEL",
+      "NAME_AR",
+      "ARABIC"
+    ],
+    "font": "14px Arial",
+    "color": "#333333",
+    "haloColor": "#ffffff",
+    "haloWidth": 2,
+    "default_field": "arabic_label"
+  }
+}

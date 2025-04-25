@@ -1,0 +1,29 @@
+{
+  "type": "default",
+  "geometry_type": "MultiLineString",
+  "property_styles": {},
+  "default_style": {
+    "weight": 3,
+    "opacity": 1,
+    "fillOpacity": 0.5,
+    "color": "#FF7F00"
+  },
+  "layer_name": "الطرق",
+  "original_name": "routes",
+  "labels": {
+    "fields": [
+      "arabic_label",
+      "name",
+      "label",
+      "NAME",
+      "LABEL",
+      "NAME_AR",
+      "ARABIC"
+    ],
+    "font": "14px Arial",
+    "color": "#333333",
+    "haloColor": "#ffffff",
+    "haloWidth": 2,
+    "default_field": "arabic_label"
+  }
+}

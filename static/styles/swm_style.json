@@ -1,0 +1,79 @@
+{
+  "type": "thematic",
+  "geometry_type": "MultiPolygon",
+  "property_styles": {
+    "color": {
+      "type": "categorical",
+      "field": "color",
+      "values": {
+        "#EFEDF5": {
+          "fillColor": "#EFEDF5",
+          "color": "#000000",
+          "weight": 1,
+          "opacity": 1,
+          "fillOpacity": 0.7
+        },
+        "#DADAEB": {
+          "fillColor": "#DADAEB",
+          "color": "#000000",
+          "weight": 1,
+          "opacity": 1,
+          "fillOpacity": 0.7
+        },
+        "#BCBDDC": {
+          "fillColor": "#BCBDDC",
+          "color": "#000000",
+          "weight": 1,
+          "opacity": 1,
+          "fillOpacity": 0.7
+        },
+        "#9E9AC8": {
+          "fillColor": "#9E9AC8",
+          "color": "#000000",
+          "weight": 1,
+          "opacity": 1,
+          "fillOpacity": 0.7
+        },
+        "#807DBA": {
+          "fillColor": "#807DBA",
+          "color": "#000000",
+          "weight": 1,
+          "opacity": 1,
+          "fillOpacity": 0.7
+        },
+        "#6A51A3": {
+          "fillColor": "#6A51A3",
+          "color": "#000000",
+          "weight": 1,
+          "opacity": 1,
+          "fillOpacity": 0.7
+        },
+        "#4A1486": {
+          "fillColor": "#4A1486",
+          "color": "#000000",
+          "weight": 1,
+          "opacity": 1,
+          "fillOpacity": 0.7
+        }
+      }
+    }
+  },
+  "default_style": {
+    "fillColor": "#CCCCCC",
+    "color": "#000000",
+    "weight": 1,
+    "opacity": 1,
+    "fillOpacity": 0.7
+  },
+  "layer_name": "إدارة النفايات الصلبة",
+  "property": "SMW",
+  "labels": {
+    "fields": [
+      "arabic_label"
+    ],
+    "font": "14px Arial",
+    "color": "#333333",
+    "haloColor": "#ffffff",
+    "haloWidth": 2
+  }
+}
