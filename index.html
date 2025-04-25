@@ -557,74 +557,7 @@ thick;
                     
                     <div class="section-divider"></div>
                     
-                    <!-- Advanced Filters -->
-                    <div class="mb-2">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <label class="form-label arabic-text mb-0">التصفية المتقدمة:</label>
-                            <button class="btn btn-sm btn-outline-secondary" id="add-filter-criteria">
-                                <i class="fas fa-plus"></i> إضافة معيار
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- Filter Criteria Container -->
-                    <div id="filter-criteria-container">
-                        <!-- Filter criteria will be added here dynamically -->
-                    </div>
-                    
-                    <!-- Filter template (hidden) -->
-                    <template id="filter-criteria-template">
-                        <div class="filter-criteria mb-3 bg-light p-2 rounded">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span class="filter-number fw-bold">معيار 1</span>
-                                <button class="btn btn-sm btn-danger remove-criteria">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                            
-                            <div class="mb-2">
-                                <label class="form-label arabic-text small">اختر طبقة:</label>
-                                <select class="form-select form-select-sm criteria-layer">
-                                    <option value="">اختر طبقة</option>
-                                </select>
-                            </div>
-                            
-                            <div class="mb-2 d-none criteria-property-container">
-                                <label class="form-label arabic-text small">اختر خاصية:</label>
-                                <select class="form-select form-select-sm criteria-property">
-                                    <option value="">اختر خاصية</option>
-                                </select>
-                            </div>
-                            
-                            <div class="mb-2 d-none criteria-operator-container">
-                                <label class="form-label arabic-text small">نوع المقارنة:</label>
-                                <select class="form-select form-select-sm criteria-operator">
-                                    <!-- Operators will be populated based on property type -->
-                                </select>
-                            </div>
-                            
-                            <div class="criteria-value-container d-none">
-                                <!-- Value inputs will be added here based on property type -->
-                            </div>
-                        </div>
-                    </template>
-                    
-                    <!-- Filter Logic -->
-                    <div class="mb-3 d-none" id="filter-logic-container">
-                        <label class="form-label arabic-text">منطق التصفية:</label>
-                        <select class="form-select" id="filter-logic">
-                            <option value="AND">تحقق جميع المعايير (AND)</option>
-                            <option value="OR">تحقق أي معيار (OR)</option>
-                        </select>
-                    </div>
-                    
-                    <!-- Apply Filters -->
-                    <div class="d-flex justify-content-between mt-3">
-                        <button class="btn btn-primary btn-sm" id="apply-advanced-filter" disabled>تطبيق التصفية</button>
-                        <button class="btn btn-secondary btn-sm" id="clear-advanced-filter">مسح التصفية</button>
-                    </div>
-                </div>
-            </div>
+              
             
             <!-- Thematic Mapping panel -->
             <div class="card mb-3">
