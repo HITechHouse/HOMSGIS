@@ -1,0 +1,109 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Khalid ibn al-Walid Tomb",
+        "category": "religious",
+        "historical_period": "Ottoman",
+        "significance": "high"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [36.7146, 34.7344]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Homs Citadel Remains",
+        "category": "historical",
+        "historical_period": "Medieval",
+        "significance": "high"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [36.7130, 34.7310]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "New Clock Tower",
+        "category": "modern",
+        "historical_period": "Contemporary",
+        "significance": "medium"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [36.7171, 34.7296]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Old Water Wheel",
+        "category": "infrastructure",
+        "historical_period": "Ancient",
+        "significance": "high"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [36.7220, 34.7325]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Al-Nouri Mosque",
+        "category": "religious",
+        "historical_period": "Medieval",
+        "significance": "high"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [36.7185, 34.7330]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Roman Theatre Ruins",
+        "category": "historical",
+        "historical_period": "Roman",
+        "significance": "very high"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [36.7210, 34.7295]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Cultural Center",
+        "category": "cultural",
+        "historical_period": "Modern",
+        "significance": "medium"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [36.7195, 34.7275]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Traditional Market Entrance",
+        "category": "commercial",
+        "historical_period": "Ottoman",
+        "significance": "medium"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [36.7165, 34.7315]
+      }
+    }
+  ]
+}

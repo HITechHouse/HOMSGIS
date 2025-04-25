@@ -1,0 +1,179 @@
+[
+  {
+    "id": "nieghborhood",
+    "name": "nieghborhood",
+    "filename": "nieghborhood.geojson",
+    "feature_count": 58,
+    "has_style": true,
+    "geometry_type": "MultiPolygon",
+    "properties": [
+      "ADM4_NAME",
+      "ADM4_NAME_",
+      "ADM4_TYPE",
+      "SOURCE",
+      "Urban_Type",
+      "Gov_AR",
+      "Gov_EN",
+      "Gov_ID",
+      "District_A",
+      "District_E",
+      "County_AR",
+      "County_EN",
+      "District_I",
+      "County_ID",
+      "Shape_Length",
+      "Shape_Area",
+      "power",
+      "SMW",
+      "waterSupply",
+      "housing",
+      "telecom",
+      "swage",
+      "powerCost",
+      "SMWCost",
+      "waterCost",
+      "housingCost",
+      "telecomCost",
+      "swageCost",
+      "OverAllIndicator",
+      "Budget",
+      "geometry"
+    ]
+  },
+  {
+    "id": "routeswgs",
+    "name": "routesWGS",
+    "filename": "routeswgs.geojson",
+    "feature_count": 9907,
+    "has_style": true,
+    "geometry_type": "MultiLineString",
+    "properties": [
+      "SHAPE_Length",
+      "geometry"
+    ]
+  },
+  {
+    "id": "routes",
+    "name": "الطرق",
+    "filename": "routes.geojson",
+    "feature_count": 9907,
+    "has_style": true,
+    "geometry_type": "MultiLineString",
+    "properties": [
+      "SHAPE_Length",
+      "geometry",
+      "arabic_label"
+    ]
+  },
+  {
+    "id": "electricity",
+    "name": "الكهرباء",
+    "filename": "electricity.geojson",
+    "feature_count": 58,
+    "has_style": true,
+    "geometry_type": "MultiPolygon",
+    "properties": [
+      "arabic_label",
+      "neighborhood",
+      "power",
+      "bin",
+      "color",
+      "cost"
+    ]
+  },
+  {
+    "id": "swm",
+    "name": "إدارة النفايات الصلبة",
+    "filename": "swm.geojson",
+    "feature_count": 58,
+    "has_style": true,
+    "geometry_type": "MultiPolygon",
+    "properties": [
+      "arabic_label",
+      "neighborhood",
+      "SMW",
+      "bin",
+      "color",
+      "cost"
+    ]
+  },
+  {
+    "id": "clean_water",
+    "name": "مياه الشرب",
+    "filename": "clean_water.geojson",
+    "feature_count": 58,
+    "has_style": true,
+    "geometry_type": "MultiPolygon",
+    "properties": [
+      "arabic_label",
+      "neighborhood",
+      "waterSupply",
+      "bin",
+      "color",
+      "cost"
+    ]
+  },
+  {
+    "id": "housing",
+    "name": "المساكن",
+    "filename": "housing.geojson",
+    "feature_count": 58,
+    "has_style": true,
+    "geometry_type": "MultiPolygon",
+    "properties": [
+      "arabic_label",
+      "neighborhood",
+      "housing",
+      "bin",
+      "color",
+      "cost"
+    ]
+  },
+  {
+    "id": "telecom",
+    "name": "الاتصالات",
+    "filename": "telecom.geojson",
+    "feature_count": 58,
+    "has_style": true,
+    "geometry_type": "MultiPolygon",
+    "properties": [
+      "arabic_label",
+      "neighborhood",
+      "telecom",
+      "bin",
+      "color",
+      "cost"
+    ]
+  },
+  {
+    "id": "waste_water",
+    "name": "الصرف الصحي",
+    "filename": "waste_water.geojson",
+    "feature_count": 58,
+    "has_style": true,
+    "geometry_type": "MultiPolygon",
+    "properties": [
+      "arabic_label",
+      "neighborhood",
+      "swage",
+      "bin",
+      "color",
+      "cost"
+    ]
+  },
+  {
+    "id": "neighborhood",
+    "name": "الأحياء",
+    "filename": "neighborhood.geojson",
+    "feature_count": 58,
+    "has_style": true,
+    "geometry_type": "MultiPolygon",
+    "properties": [
+      "arabic_label",
+      "neighborhood",
+      "OverAllIndicator",
+      "bin",
+      "color"
+    ]
+  }
+]

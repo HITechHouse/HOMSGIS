@@ -1,0 +1,137 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Old City",
+        "population": 45000,
+        "area_sqkm": 3.2,
+        "density": "high",
+        "character": "historical"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [36.7130, 34.7280],
+            [36.7190, 34.7280],
+            [36.7190, 34.7340],
+            [36.7130, 34.7340],
+            [36.7130, 34.7280]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Al-Waer",
+        "population": 76000,
+        "area_sqkm": 5.7,
+        "density": "medium",
+        "character": "residential"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [36.6950, 34.7350],
+            [36.7050, 34.7350],
+            [36.7050, 34.7450],
+            [36.6950, 34.7450],
+            [36.6950, 34.7350]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Akrama",
+        "population": 62000,
+        "area_sqkm": 4.2,
+        "density": "high",
+        "character": "mixed"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [36.7200, 34.7350],
+            [36.7300, 34.7350],
+            [36.7300, 34.7450],
+            [36.7200, 34.7450],
+            [36.7200, 34.7350]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Al-Zahra",
+        "population": 48000,
+        "area_sqkm": 3.8,
+        "density": "medium",
+        "character": "residential"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [36.6900, 34.7200],
+            [36.7000, 34.7200],
+            [36.7000, 34.7300],
+            [36.6900, 34.7300],
+            [36.6900, 34.7200]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Al-Ghouta",
+        "population": 35000,
+        "area_sqkm": 2.9,
+        "density": "medium",
+        "character": "agricultural"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [36.7300, 34.7200],
+            [36.7400, 34.7200],
+            [36.7400, 34.7300],
+            [36.7300, 34.7300],
+            [36.7300, 34.7200]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "City Center",
+        "population": 55000,
+        "area_sqkm": 2.5,
+        "density": "very high",
+        "character": "commercial"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [36.7150, 34.7250],
+            [36.7200, 34.7250],
+            [36.7200, 34.7300],
+            [36.7150, 34.7300],
+            [36.7150, 34.7250]
+          ]
+        ]
+      }
+    }
+  ]
+}

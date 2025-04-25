@@ -1,0 +1,11 @@
+{
+  "title": "homs",
+  "description": "For demo",
+  "extent": {
+    "xmin": 36.5880878006287,
+    "ymin": 34.6799548134312,
+    "xmax": 36.7711339108812,
+    "ymax": 34.7896548639074
+  },
+  "spatialReference": "GCS_WGS_1984"
+}

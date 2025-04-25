@@ -1,0 +1,131 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "zone": "city center",
+        "land_use": "commercial",
+        "area_sqkm": 2.5,
+        "density": "high"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [36.7150, 34.7300],
+            [36.7180, 34.7300],
+            [36.7180, 34.7330],
+            [36.7150, 34.7330],
+            [36.7150, 34.7300]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "zone": "old city",
+        "land_use": "historical",
+        "area_sqkm": 1.8,
+        "density": "medium"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [36.7140, 34.7340],
+            [36.7160, 34.7340],
+            [36.7160, 34.7360],
+            [36.7140, 34.7360],
+            [36.7140, 34.7340]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "zone": "eastern district",
+        "land_use": "residential",
+        "area_sqkm": 3.6,
+        "density": "high"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [36.7200, 34.7250],
+            [36.7250, 34.7250],
+            [36.7250, 34.7300],
+            [36.7200, 34.7300],
+            [36.7200, 34.7250]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "zone": "industrial area",
+        "land_use": "industrial",
+        "area_sqkm": 4.2,
+        "density": "medium"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [36.7100, 34.7200],
+            [36.7150, 34.7200],
+            [36.7150, 34.7250],
+            [36.7100, 34.7250],
+            [36.7100, 34.7200]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "zone": "green belt",
+        "land_use": "parks",
+        "area_sqkm": 2.8,
+        "density": "low"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [36.7050, 34.7300],
+            [36.7100, 34.7300],
+            [36.7100, 34.7350],
+            [36.7050, 34.7350],
+            [36.7050, 34.7300]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "zone": "university district",
+        "land_use": "educational",
+        "area_sqkm": 2.1,
+        "density": "medium"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [36.7000, 34.7250],
+            [36.7050, 34.7250],
+            [36.7050, 34.7300],
+            [36.7000, 34.7300],
+            [36.7000, 34.7250]
+          ]
+        ]
+      }
+    }
+  ]
+}

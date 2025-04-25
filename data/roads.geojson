@@ -1,0 +1,114 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Al-Dablan Street",
+        "type": "main road",
+        "width_m": 12,
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [36.7144, 34.7342],
+          [36.7180, 34.7342],
+          [36.7210, 34.7342]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Al-Hamidiyah Road",
+        "type": "main road",
+        "width_m": 15,
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [36.7160, 34.7280],
+          [36.7160, 34.7320],
+          [36.7160, 34.7360]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "June 6 Street",
+        "type": "highway",
+        "width_m": 20,
+        "surface": "concrete"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [36.7100, 34.7300],
+          [36.7200, 34.7300],
+          [36.7300, 34.7300]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Old City Path",
+        "type": "secondary road",
+        "width_m": 8,
+        "surface": "cobblestone"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [36.7170, 34.7320],
+          [36.7175, 34.7325],
+          [36.7180, 34.7330],
+          [36.7185, 34.7335]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Market Street",
+        "type": "pedestrian",
+        "width_m": 5,
+        "surface": "stone"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [36.7160, 34.7315],
+          [36.7165, 34.7315],
+          [36.7170, 34.7315]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Homs Ring Road",
+        "type": "highway",
+        "width_m": 25,
+        "surface": "asphalt"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [36.7050, 34.7250],
+          [36.7100, 34.7200],
+          [36.7150, 34.7150],
+          [36.7200, 34.7200],
+          [36.7250, 34.7250],
+          [36.7200, 34.7300],
+          [36.7150, 34.7350],
+          [36.7100, 34.7300],
+          [36.7050, 34.7250]
+        ]
+      }
+    }
+  ]
+}

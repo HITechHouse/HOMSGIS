@@ -1,0 +1,131 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Khalid ibn al-Walid Mosque",
+        "type": "religious",
+        "status": "historical",
+        "construction_year": 1908
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [36.7144, 34.7342],
+            [36.7148, 34.7342],
+            [36.7148, 34.7346],
+            [36.7144, 34.7346],
+            [36.7144, 34.7342]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Homs City Hall",
+        "type": "government",
+        "status": "functioning",
+        "construction_year": 1975
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [36.7184, 34.7315],
+            [36.7190, 34.7315],
+            [36.7190, 34.7320],
+            [36.7184, 34.7320],
+            [36.7184, 34.7315]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Al-Baath University",
+        "type": "education",
+        "status": "functioning",
+        "construction_year": 1979
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [36.7002, 34.7270],
+            [36.7020, 34.7270],
+            [36.7020, 34.7290],
+            [36.7002, 34.7290],
+            [36.7002, 34.7270]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Homs National Hospital",
+        "type": "healthcare",
+        "status": "functioning",
+        "construction_year": 1965
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [36.7224, 34.7280],
+            [36.7235, 34.7280],
+            [36.7235, 34.7290],
+            [36.7224, 34.7290],
+            [36.7224, 34.7280]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Homs Clock Tower",
+        "type": "landmark",
+        "status": "historical",
+        "construction_year": 1924
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [36.7170, 34.7295],
+            [36.7172, 34.7295],
+            [36.7172, 34.7297],
+            [36.7170, 34.7297],
+            [36.7170, 34.7295]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Old Souk Market",
+        "type": "commercial",
+        "status": "historical",
+        "construction_year": 1850
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [36.7160, 34.7310],
+            [36.7170, 34.7310],
+            [36.7170, 34.7320],
+            [36.7160, 34.7320],
+            [36.7160, 34.7310]
+          ]
+        ]
+      }
+    }
+  ]
+}
