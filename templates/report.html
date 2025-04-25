@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homs Map Report</title>
+    
+    <!-- Bootstrap CSS (Replit-themed) -->
+    <link rel="stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <style>
+        @media print {
+            body {
+                background-color: white;
+                color: black;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .container {
+                width: 100%;
+                max-width: 100%;
+            }
+            .card {
+                border: 1px solid #ddd;
+            }
+            .card-header {
+                background-color: #f8f9fa !important;
+                color: #212529 !important;
+            }
+            .table {
+                color: #212529 !important;
+            }
+            .table th, .table td {
+                border-color: #dee2e6 !important;
+            }
+        }
+        
+        .map-placeholder {
+            background-color: #f0f0f0;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar (won't show in print) -->
+    <nav class="navbar navbar-dark bg-dark no-print">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-map-marked-alt me-2"></i>
+                Homs Map Explorer
+            </a>
+            <div>
+                <button id="print-report" class="btn btn-outline-light">
+                    <i class="fas fa-print me-1"></i> Print Report
+                </button>
+                <a href="/" class="btn btn-outline-secondary ms-2">
+                    <i class="fas fa-arrow-left me-1"></i> Back to Map
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4 mb-5">
+        <div class="card">
+            <div class="card-header bg-secondary text-white">
+                <div class="d-flex align-items-center justify-content-between">
+                    <h2 class="h4 m-0">
+                        <i class="fas fa-file-alt me-2"></i>
+                        <span id="report-title">Map Report</span>
+                    </h2>
+                    <div class="no-print">
+                        <small class="text-light">Generated on <span id="report-date"></span></small>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div id="report-description" class="mb-4">
+                    <p class="lead">This report provides an overview of selected features from the Homs, Syria map.</p>
+                </div>
+                
+                <div id="report-map-section" class="mb-4">
+                    <h3 class="h5 mb-3">Map View</h3>
+                    <div id="map-image-container" class="map-placeholder">
+                        <div class="text-center text-secondary">
+                            <i class="fas fa-map fa-3x mb-3"></i>
+                            <p>Map image will appear here</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="report-summary" class="mb-4">
+                    <h3 class="h5 mb-3">Summary</h3>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Layer Information</h5>
+                                    <p><strong>Layer Name:</strong> <span id="layer-name">-</span></p>
+                                    <p><strong>Total Features:</strong> <span id="feature-count">0</span></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Selection Information</h5>
+                                    <p><strong>Selected Features:</strong> <span id="selected-count">0</span></p>
+                                    <p><strong>Selection Type:</strong> <span id="selection-type">-</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="feature-details">
+                    <h3 class="h5 mb-3">Feature Details</h3>
+                    <div class="table-responsive">
+                        <table class="table table-striped" id="features-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Feature ID</th>
+                                    <th>Properties</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="3" class="text-center">No features selected</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer text-muted">
+                <div class="row">
+                    <div class="col-6">
+                        Homs Map Explorer
+                    </div>
+                    <div class="col-6 text-end">
+                        Page 1 of 1
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set current date
+            const now = new Date();
+            document.getElementById('report-date').textContent = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
+            
+            // Get data from URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const reportData = JSON.parse(decodeURIComponent(urlParams.get('data') || '{}'));
+            
+            // Fill report data
+            if (reportData.title) {
+                document.getElementById('report-title').textContent = reportData.title;
+                document.title = reportData.title + ' - Homs Map Report';
+            }
+            
+            if (reportData.description) {
+                document.getElementById('report-description').innerHTML = `<p class="lead">${reportData.description}</p>`;
+            }
+            
+            if (reportData.mapImage) {
+                const mapContainer = document.getElementById('map-image-container');
+                mapContainer.innerHTML = '';
+                mapContainer.classList.remove('map-placeholder');
+                
+                const img = document.createElement('img');
+                img.src = reportData.mapImage;
+                img.alt = 'Map of selected area';
+                img.className = 'img-fluid';
+                img.style.width = '100%';
+                mapContainer.appendChild(img);
+            }
+            
+            // Fill summary info
+            if (reportData.layerName) {
+                document.getElementById('layer-name').textContent = reportData.layerName;
+            }
+            
+            if (reportData.featureCount) {
+                document.getElementById('feature-count').textContent = reportData.featureCount;
+                document.getElementById('selected-count').textContent = reportData.featureCount;
+            }
+            
+            if (reportData.selectionType) {
+                document.getElementById('selection-type').textContent = reportData.selectionType;
+            }
+            
+            // Fill feature table
+            if (reportData.features && reportData.features.length > 0) {
+                const tableBody = document.getElementById('features-table').querySelector('tbody');
+                tableBody.innerHTML = '';
+                
+                reportData.features.forEach((feature, index) => {
+                    const row = document.createElement('tr');
+                    
+                    const indexCell = document.createElement('td');
+                    indexCell.textContent = index + 1;
+                    row.appendChild(indexCell);
+                    
+                    const idCell = document.createElement('td');
+                    idCell.textContent = feature.id || `Feature ${index + 1}`;
+                    row.appendChild(idCell);
+                    
+                    const propertiesCell = document.createElement('td');
+                    if (feature.properties) {
+                        const propList = document.createElement('ul');
+                        propList.className = 'list-unstyled mb-0';
+                        
+                        Object.entries(feature.properties).forEach(([key, value]) => {
+                            if (value !== null && value !== undefined) {
+                                const item = document.createElement('li');
+                                item.innerHTML = `<strong>${key}:</strong> ${value}`;
+                                propList.appendChild(item);
+                            }
+                        });
+                        
+                        propertiesCell.appendChild(propList);
+                    } else {
+                        propertiesCell.textContent = 'No properties';
+                    }
+                    row.appendChild(propertiesCell);
+                    
+                    tableBody.appendChild(row);
+                });
+            }
+            
+            // Print report button
+            document.getElementById('print-report').addEventListener('click', function() {
+                window.print();
+            });
+        });
+    </script>
+</body>
+</html>

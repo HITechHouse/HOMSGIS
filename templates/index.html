@@ -1,1 +1,273 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homs, Syria - Interactive Map</title>
+    
+    <!-- Bootstrap CSS (Replit-themed) -->
+    <link rel="stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css">
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    
+    <!-- Leaflet Print CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.browser.print@2.0.2/dist/leaflet.browser.print.min.css">
+    
+    <!-- Leaflet MarkerCluster CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/style.css">
+    
+    <!-- Add support for Arabic text -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .arabic-text {
+            font-family: 'Cairo', sans-serif;
+            direction: rtl;
+            text-align: right;
+        }
+        
+        /* Make map labels work with Arabic */
+        .map-label {
+            font-family: 'Cairo', sans-serif;
+            white-space: nowrap;
+            text-align: center;
+        }
+        
+        /* Ensure feature popups support Arabic text */
+        .feature-popup {
+            font-family: 'Cairo', sans-serif;
+        }
+        
+        .leaflet-popup-content {
+            direction: rtl;
+            text-align: right;
+        }
+        
+        /* Fix the layer list to better display Arabic layer names */
+        .layer-name {
+            font-family: 'Cairo', sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-map-marked-alt me-2"></i>
+                Homs Map Explorer - خريطة حمص التفاعلية
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#"><i class="fas fa-map me-1"></i> Map / خريطة</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="print-map-btn"><i class="fas fa-print me-1"></i> Print / طباعة</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="generate-report-btn"><i class="fas fa-file-alt me-1"></i> Report / تقرير</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
+    <!-- Main Content -->
+    <div class="container-fluid mt-2">
+        <div class="row">
+            <!-- Sidebar for Layer Control and Filters -->
+            <div class="col-md-3 col-lg-2">
+                <div class="card mb-3">
+                    <div class="card-header bg-secondary text-white">
+                        <i class="fas fa-layer-group me-2"></i> Map Layers / طبقات الخريطة
+                    </div>
+                    <div class="card-body">
+                        <div id="layer-control" class="layer-list">
+                            <div class="d-flex justify-content-center">
+                                <div class="spinner-border text-secondary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                            <p class="text-center text-muted mt-2">Loading layers...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-3">
+                    <div class="card-header bg-secondary text-white">
+                        <i class="fas fa-filter me-2"></i> Filters / تصفية
+                        <button id="filter-toggle" class="btn btn-sm btn-outline-light float-end" type="button" data-bs-toggle="collapse" data-bs-target="#filter-options" aria-expanded="false" aria-controls="filter-options">
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                    </div>
+                    <div class="collapse show" id="filter-options">
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="layer-select" class="form-label">Layer to Filter</label>
+                                <select id="layer-select" class="form-select">
+                                    <option value="">Select a layer</option>
+                                </select>
+                            </div>
+                            <div id="filter-properties" class="mb-3 d-none">
+                                <label for="property-select" class="form-label">Property</label>
+                                <select id="property-select" class="form-select mb-2">
+                                    <option value="">Select a property</option>
+                                </select>
+                                
+                                <div id="filter-controls" class="d-none">
+                                    <div id="filter-text-control" class="mb-2 d-none">
+                                        <label for="filter-text" class="form-label">Filter Value</label>
+                                        <input type="text" id="filter-text" class="form-control" placeholder="Enter text to filter">
+                                    </div>
+                                    
+                                    <div id="filter-number-control" class="mb-2 d-none">
+                                        <label for="filter-min" class="form-label">Min Value</label>
+                                        <input type="number" id="filter-min" class="form-control mb-2" placeholder="Minimum">
+                                        <label for="filter-max" class="form-label">Max Value</label>
+                                        <input type="number" id="filter-max" class="form-control" placeholder="Maximum">
+                                    </div>
+                                    
+                                    <div id="filter-select-control" class="mb-2 d-none">
+                                        <label for="filter-select" class="form-label">Select Value</label>
+                                        <select id="filter-select" class="form-select">
+                                            <option value="">All values</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-grid gap-2">
+                                <button id="apply-filter" class="btn btn-secondary" disabled>
+                                    <i class="fas fa-check me-1"></i> Apply Filter
+                                </button>
+                                <button id="clear-filter" class="btn btn-outline-secondary" disabled>
+                                    <i class="fas fa-times me-1"></i> Clear Filter
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card mb-3">
+                    <div class="card-header bg-secondary text-white">
+                        <i class="fas fa-map-marker-alt me-2"></i> Selection / اختيار
+                    </div>
+                    <div class="card-body">
+                        <div id="selection-info">
+                            <p class="text-muted text-center">No features selected</p>
+                        </div>
+                        <div class="d-grid gap-2 mt-2">
+                            <button id="clear-selection" class="btn btn-outline-secondary" disabled>
+                                <i class="fas fa-times me-1"></i> Clear Selection
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Map Container -->
+            <div class="col-md-9 col-lg-10">
+                <div class="card mb-3">
+                    <div class="card-body p-0">
+                        <div id="map-container"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Modal -->
+    <div class="modal fade" id="report-modal" tabindex="-1" aria-labelledby="report-modal-label" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="report-modal-label">
+                        <i class="fas fa-file-alt me-2"></i> Generate Report / إنشاء تقرير
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Select features on the map to include them in your report.
+                    </div>
+                    
+                    <div id="report-options">
+                        <div class="mb-3">
+                            <label for="report-title" class="form-label">Report Title</label>
+                            <input type="text" class="form-control" id="report-title" placeholder="Enter report title">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="report-description" class="form-label">Description</label>
+                            <textarea class="form-control" id="report-description" rows="3" placeholder="Enter report description"></textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="include-map" checked>
+                                <label class="form-check-label" for="include-map">
+                                    Include map screenshot
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Selected Features (<span id="selected-count">0</span>)</label>
+                            <div class="table-responsive">
+                                <table class="table table-striped table-sm" id="selected-features-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Layer</th>
+                                            <th>Properties</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="3" class="text-center text-muted">No features selected</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="create-report-btn">
+                        <i class="fas fa-file-download me-1"></i> Create Report
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
+    <!-- Leaflet Print Plugin -->
+    <script src="https://unpkg.com/leaflet.browser.print@2.0.2/dist/leaflet.browser.print.min.js"></script>
+    
+    <!-- Leaflet MarkerCluster Plugin -->
+    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="/static/js/map.js"></script>
+    <script src="/static/js/filter.js"></script>
+    <script src="/static/js/report.js"></script>
+</body>
+</html>
