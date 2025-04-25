@@ -1,0 +1,150 @@
+/* Map Container */
+#map-container {
+    width: 100%;
+    height: 85vh;
+    min-height: 500px;
+    z-index: 1;
+}
+
+/* Layer Control Styling */
+.layer-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.layer-item {
+    margin-bottom: 8px;
+    padding: 8px;
+    border-radius: 4px;
+    background-color: var(--bs-dark);
+}
+
+.layer-checkbox {
+    margin-right: 8px;
+}
+
+.layer-name {
+    font-weight: 500;
+    margin-left: 4px;
+}
+
+.layer-legend {
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    border-radius: 2px;
+    margin-right: 8px;
+}
+
+/* Custom Leaflet Styling */
+.leaflet-popup-content {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.leaflet-popup-content-wrapper {
+    border-radius: 4px;
+}
+
+.feature-properties {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+.feature-properties li {
+    margin-bottom: 4px;
+    word-break: break-word;
+}
+
+.feature-properties .property-name {
+    font-weight: bold;
+}
+
+/* Arabic text support */
+.feature-popup {
+    direction: rtl;
+    font-family: 'Cairo', sans-serif;
+    text-align: right;
+}
+
+.feature-popup h6 {
+    font-family: 'Cairo', sans-serif;
+    font-weight: 700;
+    margin-bottom: 12px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 8px;
+}
+
+.feature-popup .property-name {
+    margin-left: 6px;
+}
+
+/* Filter Styling */
+#filter-options {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+/* Selections Styling */
+.selected-feature {
+    background-color: rgba(255, 255, 0, 0.4);
+    stroke: #ffff00;
+    stroke-width: 3;
+    stroke-opacity: 0.7;
+}
+
+/* Selection Info Table */
+#selection-info {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+#selected-features-table {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+/* Custom Print Styles */
+.leaflet-control-browser-print {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+}
+
+.leaflet-control-browser-print a {
+    background-color: var(--bs-dark);
+    color: var(--bs-light);
+    border-radius: 4px;
+    padding: 6px 10px;
+}
+
+.leaflet-control-browser-print a:hover {
+    background-color: var(--bs-secondary);
+}
+
+/* Map Label Styling */
+.map-label {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    font-family: 'Cairo', sans-serif;
+    font-weight: 700;
+    text-shadow: 
+       -1px -1px 0 #fff,  
+        1px -1px 0 #fff,
+       -1px  1px 0 #fff,
+        1px  1px 0 #fff;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    #map-container {
+        height: 70vh;
+    }
+    
+    .layer-list {
+        max-height: 200px;
+    }
+}
