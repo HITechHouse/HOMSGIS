@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homs Interactive Map - خريطة حمص التفاعلية</title>
+    
+    <!-- Bootstrap CSS with Replit dark theme -->
+    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    
+    <!-- Leaflet Print Plugin CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-browser-print@1.0.6/dist/leaflet.browser.print.css" />
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts - Cairo for Arabic support -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+   <style>
+        /* General Styling */
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Apply RTL support */
+        .arabic-text {
+            font-family: 'Cairo', sans-serif;
+            direction: rtl;
+            text-align: right;
+        }
+        
+        /* Map container */
+        #map-container {
+            flex: 1;
+            width: 100%;
+            height: calc(100vh - 56px);
+            position: relative;
+        }
+        
+        /* Classification styles */
+        .classification-legend {
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            padding: 8px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .legend-title {
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 2px;
+        }
+        
+        .legend-subtitle {
+            font-size: 0.9em;
+            text-align: center;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .legend-items {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+        }
+        
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            margin-right: 8px;
+            border: 1px solid #333;
+        }
+        
+        .legend-label {
+            font-size: 0.85em;
+        }
+        
+        .section-divider {
+            height: 1px;
+            background-color: rgba(255, 255, 255, 0.2);
+            margin: 15px 0;
+        }
+        
+        /* Main layout */
+        .content-container {
+            display: flex;
+            height: calc(100vh - 56px);
+        }
+        
+        /* Sidebar styling */
+        .sidebar {
+            width: 300px;
+            height: 100%;
+            overflow-y: auto;
+            padding: 15px;
+            background-color: var(--bs-dark-bg-subtle);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+        
+        /* Map labels */
+        .map-label {
+            background: rgba(255, 255, 255, 0.7);
+            border: none;
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-weight: bold;
+            text-align: center;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+        
+        /* Layer control styling */
+        .layer-item {
+            margin-bottom: 10px;
+        }
+        
+        .layer-name {
+            margin-left: 5px;
+        }
+        
+        .layer-legend {
+            display: inline-block;
+            width: 15px;
+            height: 15px;
+            margin-right: 5px;
+            border: 1px solid #000;
+        }
+        
+        /* Feature properties in popup */
+        .feature-popup {
+            max-width: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .feature-properties {
+            padding-left: 0;
+            list-style-type: none;
+        }
+        
+        /* Classification legend styling */
+        .classification-legend {
+            font-size: 0.9rem;
+        }
+        
+        .legend-color {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+            border: 1px solid rgba(0,0,0,0.2);
+        }
+        
+        .classification-item {
+            margin-bottom: 5px;
+        }
+        
+        .map-classification-legend {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+        }
+        
+        .feature-properties li {
+            margin-bottom: 5px;
+            word-break: break-word;
+        }
+        
+        .property-name {
+            font-weight: bold;
+        }
+        
+        /* Loading indicator */
+        .loading-indicator {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            z-index: 2000;
+        }
+        
+        /* Filter styling */
+        #filter-controls {
+            margin-top: 10px;
+        }
+        
+        /* Section dividers */
+        .section-divider {
+            height: 1px;
+            background-color: #dee2e6;
+            margin: 15px 0;
+        }
+        
+        /* Panels */
+        .panel-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                max-height: 40vh;
+            }
+            
+            .content-container {
+                flex-direction: column;
+            }
+            
+            #map-container {
+                height: 60vh;
+            }
+        }
+		.bg-dark {
+  --bs-bg-opacity: 1;
+  background-color: rgb(7, 78, 240) !important;
+  }
+  .bg-dark-subtle {
+  background-color: #0C4EF2 !important;
+}
+.card {
+  --bs-card-spacer-y: 1rem;
+  --bs-card-spacer-x: 1rem;
+  --bs-card-title-spacer-y: .5rem;
+  --bs-card-title-color: ;
+  --bs-card-subtitle-color: ;
+  --bs-card-border-width: var(--bs-border-width);
+  --bs-card-border-color: var(--bs-border-color-translucent);
+  --bs-card-border-radius: var(--bs-border-radius);
+  --bs-card-box-shadow: ;
+  --bs-card-inner-border-radius: calc(var(--bs-border-radius) - (var(--bs-border-width)));
+  --bs-card-cap-padding-y: .5rem;
+  --bs-card-cap-padding-x: 1rem;
+  --bs-card-cap-bg: rgba(var(--bs-body-color-rgb), .03);
+  --bs-card-cap-color: ;
+  --bs-card-height: ;
+  --bs-card-color: ;
+  --bs-card-bg: #1857E8;
+  --bs-card-img-overlay-padding: 1rem;
+  --bs-card-group-margin: .75rem;
+  color: var(--bs-body-color);
+  word-wrap:
+break-word;
+}
+    </style>
+  <style>
+
+
+#mainHeader {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+  background-color: #007bff;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+}
+
+.header-logo {
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  object-fit: contain;
+}
+
+.header-title {
+  flex: 1;
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+  line-height: 1.4;
+}
+
+#mainFooter {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  z-index: 1000;
+  background-color: #3066ff;
+  padding: 0.5rem 1rem;
+}
+
+#scrollableContent {
+  flex: 1;
+  overflow-y: auto;
+  margin-top: 70px;  /* ارتفاع الهيدر */
+  margin-bottom: 70px; /* ارتفاع الفوتر */
+  padding: 20px;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  padding: 2rem;
+  border-color: black;
+  border-width: thick;
+}
+
+.nav-tabs .nav-link {
+  font-weight: bold;
+  color: #495057;
+  border-radius: 12px 12px 0 0;
+  border: none;
+  background: #e3f2fd;
+  margin-right: 5px;
+  transition: all 0.3s ease;
+}
+
+.nav-tabs .nav-link.active {
+  background: #0d6efd;
+  color: white;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.form-control, .btn {
+  border-radius: 10px;
+}
+
+.header-logos {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 5px;
+}
+
+.header-logos img {
+  height: 40px;
+  width: 40px;
+  object-fit: contain;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.7);
+}
+
+.header-title {
+  text-align: center;
+  flex: 1;
+}
+
+.title-ar {
+  font-size: 1.8rem;
+  line-height: 1.4;
+  font-weight: bold;
+  white-space: normal;
+}
+.title-en {
+  font-size: 1.2rem;
+  line-height: 1.4;
+  font-weight: bold;
+  white-space: normal;
+}
+@media (max-width: 768px) {
+  .title-en {
+    display: none;
+  }
+}
+
+.language-dropdown {
+  position: relative;
+}
+
+.dots-button {
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  color: white;
+  padding: 5px;
+}
+
+.language-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  display: none;
+  flex-direction: column;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  z-index: 2000;
+  min-width: 60px;
+}
+
+.language-menu div {
+  padding: 8px 12px;
+  cursor: pointer;
+  color: #333;
+  font-weight: bold;
+  text-align: center;
+}
+
+.language-menu div:hover {
+  background-color: #f1f1f1;
+}
+
+
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1rem;
+  color: white;
+}
+
+
+
+.social-icon {
+  color: #fff;
+  font-size: 1.2rem;
+  margin-left: 1rem;
+  transition: color 0.3s ease;
+}
+
+.social-icon:hover {
+  color: #3498db;
+}
+footer .copyright img {
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  background-color: white;
+  padding: 2px;
+  object-fit: contain;
+  background-clip: content-box;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+.footer-logo {
+  height: 24px;
+  margin-right: 8px;
+  vertical-align: middle;
+  display: inline-block !important;
+}
+.companyHITech {
+  color: white !important; /* اللون الأبيض */
+  text-decoration: none; /* إزالة الخط التحتي */
+  transition: color 0.3s ease; /* تأثير انتقالي عند التحويم */
+}
+
+.companyHITech:hover {
+  color: #f0f0f0 !important; /* لون فاتح قليلاً عند التحويم */
+  text-decoration: underline; /* إضافة خط تحتي عند التحويم */
+}
+.card {
+  background:
+rgba(25, 19, 210, 0.9);
+  border-radius:
+16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  padding:
+2rem;
+  border-color:
+black;
+  border-width:
+thick;
+}
+</style>
+   
+</head>
+<body>
+    <!-- Navigation bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                 خريطة حمص التفاعلية
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <button class="btn btn-outline-light mx-1" id="print-map-btn">
+                            <i class="fas fa-print"></i> طباعة
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="btn btn-outline-light mx-1" id="generate-report-btn" data-bs-toggle="modal" data-bs-target="#report-modal">
+                            <i class="fas fa-file-alt"></i> تقرير
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main content container -->
+    <div class="content-container">
+        <!-- Sidebar -->
+        <div class="sidebar bg-dark-subtle">
+            <!-- Layer control panel -->
+            <div class="card mb-3">
+                <div class="card-header bg-dark text-white">
+                    <i class="fas fa-layer-group me-2"></i> الطبقات
+                </div>
+                <div class="card-body p-2" id="layer-control">
+                    <div class="text-center p-3">
+                        <div class="spinner-border text-secondary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="text-muted mt-2 arabic-text">جاري تحميل الطبقات...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Advanced Filter panel -->
+            <div class="card mb-3">
+                <div class="card-header bg-dark text-white">
+                    <i class="fas fa-filter me-2"></i> البحث والتصفية المتقدمة
+                </div>
+                <div class="card-body p-2">
+                    <!-- Quick Search -->
+                    <div class="mb-3">
+                        <label for="quick-search" class="form-label arabic-text">بحث سريع:</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="quick-search" placeholder="البحث في جميع الطبقات">
+                            <button class="btn btn-primary" id="search-button">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="section-divider"></div>
+                    
+                    <!-- Advanced Filters -->
+                    <div class="mb-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <label class="form-label arabic-text mb-0">التصفية المتقدمة:</label>
+                            <button class="btn btn-sm btn-outline-secondary" id="add-filter-criteria">
+                                <i class="fas fa-plus"></i> إضافة معيار
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Filter Criteria Container -->
+                    <div id="filter-criteria-container">
+                        <!-- Filter criteria will be added here dynamically -->
+                    </div>
+                    
+                    <!-- Filter template (hidden) -->
+                    <template id="filter-criteria-template">
+                        <div class="filter-criteria mb-3 bg-light p-2 rounded">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="filter-number fw-bold">معيار 1</span>
+                                <button class="btn btn-sm btn-danger remove-criteria">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            
+                            <div class="mb-2">
+                                <label class="form-label arabic-text small">اختر طبقة:</label>
+                                <select class="form-select form-select-sm criteria-layer">
+                                    <option value="">اختر طبقة</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-2 d-none criteria-property-container">
+                                <label class="form-label arabic-text small">اختر خاصية:</label>
+                                <select class="form-select form-select-sm criteria-property">
+                                    <option value="">اختر خاصية</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-2 d-none criteria-operator-container">
+                                <label class="form-label arabic-text small">نوع المقارنة:</label>
+                                <select class="form-select form-select-sm criteria-operator">
+                                    <!-- Operators will be populated based on property type -->
+                                </select>
+                            </div>
+                            
+                            <div class="criteria-value-container d-none">
+                                <!-- Value inputs will be added here based on property type -->
+                            </div>
+                        </div>
+                    </template>
+                    
+                    <!-- Filter Logic -->
+                    <div class="mb-3 d-none" id="filter-logic-container">
+                        <label class="form-label arabic-text">منطق التصفية:</label>
+                        <select class="form-select" id="filter-logic">
+                            <option value="AND">تحقق جميع المعايير (AND)</option>
+                            <option value="OR">تحقق أي معيار (OR)</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Apply Filters -->
+                    <div class="d-flex justify-content-between mt-3">
+                        <button class="btn btn-primary btn-sm" id="apply-advanced-filter" disabled>تطبيق التصفية</button>
+                        <button class="btn btn-secondary btn-sm" id="clear-advanced-filter">مسح التصفية</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Thematic Mapping panel -->
+            <div class="card mb-3">
+                <div class="card-header bg-dark text-white">
+                    <i class="fas fa-palette me-2"></i> التصنيف الموضوعي
+                </div>
+                <div class="card-body p-2">
+                    <div class="mb-3">
+                        <label for="thematic-property-select" class="form-label arabic-text">اختر الحقل للتصنيف:</label>
+                        <select class="form-select" id="thematic-property-select">
+                            <option value="">اختر حقل</option>
+                            <!-- Will be populated with neighborhood properties -->
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="color-scheme-select" class="form-label arabic-text">مخطط الألوان:</label>
+                        <select class="form-select" id="color-scheme-select">
+                            <option value="green">أخضر</option>
+                            <option value="blue">أزرق</option>
+                            <option value="red">أحمر</option>
+                            <option value="purple">أرجواني</option>
+                            <option value="orange">برتقالي</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-2">
+                        <label class="form-label arabic-text">معاينة المخطط اللوني:</label>
+                        <div id="color-preview" class="d-flex justify-content-between" style="height: 20px; margin-bottom: 10px;">
+                            <!-- Will be filled with color preview -->
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <button class="btn btn-primary btn-sm" id="apply-thematic">تطبيق التصنيف</button>
+                        <button class="btn btn-secondary btn-sm" id="reset-thematic">إعادة تعيين</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Infrastructure Classification panel -->
+            <div class="card mb-3">
+                <div class="card-header bg-dark text-white">
+                    <i class="fas fa-chart-pie me-2"></i> تصنيف البنية التحتية
+                </div>
+                <div class="card-body p-2">
+                    <div class="mb-3">
+                        <label for="classification-field-select" class="form-label arabic-text">اختر حقل التصنيف:</label>
+                        <select class="form-select" id="classification-field-select">
+                            <option value="">اختر حقل</option>
+                            <option value="OverAllIndicator">مؤشر التقييم الكلي</option>
+                            <option value="power">الكهرباء</option>
+                            <option value="SMW">النفايات الصلبة</option>
+                            <option value="waterSupply">إمدادات المياه</option>
+                            <option value="housing">الإسكان</option>
+                            <option value="telecom">الاتصالات</option>
+                            <option value="swage">الصرف الصحي</option>
+                        </select>
+                    </div>
+                    
+                    <div id="classification-legend-container" class="mb-3">
+                        <!-- Classification legend will be shown here -->
+                        <p class="text-muted text-center arabic-text">اختر حقل التصنيف لعرض تفاصيله</p>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <button class="btn btn-primary btn-sm" id="apply-classification">تطبيق التصنيف</button>
+                        <button class="btn btn-secondary btn-sm" id="reset-classification">إعادة تعيين</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Selection panel -->
+            <div class="card mb-3">
+                <div class="card-header bg-dark text-white">
+                    <i class="fas fa-mouse-pointer me-2"></i> التحديد
+                </div>
+                <div class="card-body p-2">
+                    <div id="selection-info">
+                        <p class="text-muted text-center arabic-text">لم يتم تحديد أي معالم</p>
+                    </div>
+                    <div class="d-flex justify-content-end mt-2">
+                        <button class="btn btn-secondary btn-sm" id="clear-selection" disabled>مسح التحديد</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Map container -->
+        <div id="map-container"></div>
+    </div>
+    <footer id="mainFooter">
+<div class="footer-content">
+  <div class="copyright">
+    <span class="copyright-text">
+      © <script>document.write(new Date().getFullYear())</script>, جميع الحقوق محفوظة لصالح 
+      <a class="companyHITech" href="https://www.hi-techhouse.com" target="_blank">دار التقنية الحديثة</a>
+    </span>
+    <img alt="Company Logo" src="static/img/HTH.png" class="footer-logo"/>
+  </div>
+<div class="social-icons">
+<a aria-label="Facebook" class="social-icon facebook" href="#"><i class="fab fa-facebook-f"></i></a>
+<a aria-label="Twitter" class="social-icon twitter" href="#"><i class="fab fa-twitter"></i></a>
+<a aria-label="Instagram" class="social-icon instagram" href="#"><i class="fab fa-instagram"></i></a>
+<a aria-label="LinkedIn" class="social-icon linkedin" href="#"><i class="fab fa-linkedin-in"></i></a>
+<a aria-label="WhatsApp" class="social-icon whatsapp" href="https://wa.me/966501234567"><i class="fab fa-whatsapp"></i></a>
+</div>
+</div>
+</footer>
+    <!-- Report Modal -->
+    <div class="modal fade" id="report-modal" tabindex="-1" aria-labelledby="report-modal-label" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title arabic-text" id="report-modal-label">إنشاء تقرير</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="report-title" class="form-label arabic-text">عنوان التقرير:</label>
+                        <input type="text" class="form-control" id="report-title" placeholder="أدخل عنوان التقرير">
+                    </div>
+                    <div class="mb-3">
+                        <label for="report-description" class="form-label arabic-text">وصف التقرير:</label>
+                        <textarea class="form-control" id="report-description" rows="3" placeholder="أدخل وصف التقرير"></textarea>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="include-map" checked>
+                        <label class="form-check-label arabic-text" for="include-map">تضمين صورة الخريطة</label>
+                    </div>
+                    
+                    <h6 class="mt-4 arabic-text">المعالم المحددة (<span id="selected-count">0</span>):</h6>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-sm">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>الاسم</th>
+                                    <th>الخصائص</th>
+                                </tr>
+                            </thead>
+                            <tbody id="selected-features-table">
+                                <tr>
+                                    <td colspan="3" class="text-center text-muted">لم يتم تحديد أي معالم</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-primary" id="create-report-btn">إنشاء التقرير</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
+    <!-- Leaflet Print Plugin -->
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-browser-print@1.0.6/dist/leaflet.browser.print.min.js"></script>
+    
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Classification JS -->
+    <script src="static/js/classification.js"></script>
+    
+    <!-- App JS -->
+    <script src="js/app.js"></script>
+    
+    <script>
+        // Setup code that loads MXD symbology to override the default one
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load the MXD style information for each layer
+            fetch('static/styles/layers.json')
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    }
+                    throw new Error("Could not load the style information. Using default styles.");
+                })
+                .then(layers => {
+                    // If we successfully loaded the style info, update the layer styles
+                    if (window.updateLayerStyles && typeof window.updateLayerStyles === 'function') {
+                        window.updateLayerStyles(layers);
+                    }
+                })
+                .catch(error => {
+                    console.warn("Using default styles:", error);
+                });
+        });
+    </script>
+</body>
+</html>
