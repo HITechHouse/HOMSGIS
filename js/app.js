@@ -1660,13 +1660,15 @@
         
         select.innerHTML = '<option value="">اختر حقل</option>';
         
-        // Add all properties for thematic mapping
+        // Add only properties containing "cost" for thematic mapping
         if (neighborhoodProperties && neighborhoodProperties.length) {
             neighborhoodProperties.forEach(prop => {
-                const option = document.createElement('option');
-                option.value = prop;
-                option.textContent = prop;
-                select.appendChild(option);
+                if (prop.toLowerCase().includes('cost')) {
+                    const option = document.createElement('option');
+                    option.value = prop;
+                    option.textContent = prop;
+                    select.appendChild(option);
+                }
             });
         }
     }
@@ -2784,4 +2786,289 @@
             applyButton.disabled = true;
         }
     }
+
+    /* ------ Budget Planning Functions ------ */
+
+    // Variables for budget planning
+    let activeBudgetService = null;
+    let activeBudgetAmount = 0;
+
+    /**
+     * Handle budget service selection
+     */
+    function handleBudgetServiceSelect() {
+        activeBudgetService = this.value;
+        document.getElementById('apply-budget').disabled = !activeBudgetService || !activeBudgetAmount;
+    }
+
+    /**
+     * Handle budget amount input
+     */
+    function handleBudgetAmountInput() {
+        activeBudgetAmount = parseFloat(this.value) || 0;
+        document.getElementById('apply-budget').disabled = !activeBudgetService || !activeBudgetAmount;
+    }
+
+    /**
+     * Apply budget-based filtering to neighborhoods
+     */
+    function applyBudgetFilter() {
+        if (!activeBudgetService || !activeBudgetAmount) {
+            alert('الرجاء اختيار خدمة وإدخال ميزانية');
+            return;
+        }
+
+        const neighborhoodLayer = layerControls['neighborhood'];
+        if (!neighborhoodLayer || !neighborhoodLayer.layer) {
+            alert('طبقة الأحياء غير متوفرة');
+            return;
+        }
+
+        const geoJSONLayer = neighborhoodLayer.layer.getLayers()[0];
+        let affordableNeighborhoods = [];
+        let totalCost = 0;
+
+        // First, collect all neighborhoods and their costs
+        const neighborhoods = [];
+        geoJSONLayer.eachLayer(layer => {
+            const feature = layer.feature;
+            const cost = parseFloat(feature.properties[activeBudgetService]) || 0;
+            neighborhoods.push({
+                feature: feature,
+                cost: cost,
+                layer: layer
+            });
+        });
+
+        // Sort neighborhoods by cost (ascending)
+        neighborhoods.sort((a, b) => a.cost - b.cost);
+
+        // Find which neighborhoods can be repaired within the total budget
+        let currentTotal = 0;
+        for (const neighborhood of neighborhoods) {
+            if (currentTotal + neighborhood.cost <= activeBudgetAmount) {
+                currentTotal += neighborhood.cost;
+                affordableNeighborhoods.push(neighborhood);
+            } else {
+                break; // Stop when we exceed the budget
+            }
+        }
+
+        // Apply styles based on affordability
+        geoJSONLayer.setStyle(feature => {
+            const isAffordable = affordableNeighborhoods.some(n => n.feature === feature);
+            return {
+                fillColor: isAffordable ? '#31a354' : '#e5f5e0', // Green for affordable, light green for others
+                weight: 1,
+                opacity: 1,
+                color: '#31a354',
+                fillOpacity: isAffordable ? 0.7 : 0.3
+            };
+        });
+
+        // Update summary information
+        document.getElementById('affordable-count').textContent = affordableNeighborhoods.length;
+        document.getElementById('total-cost').textContent = `$${currentTotal.toLocaleString()}`;
+
+        // Create budget legend
+        createBudgetLegend();
+    }
+
+    /**
+     * Create a legend for the budget filter
+     */
+    function createBudgetLegend() {
+        // Remove existing legend if any
+        const existingLegend = document.querySelector('.budget-legend');
+        if (existingLegend) {
+            existingLegend.remove();
+        }
+
+        // Create a new legend
+        const legend = L.control({ position: 'bottomright' });
+
+        legend.onAdd = function(map) {
+            const div = L.DomUtil.create('div', 'info legend budget-legend');
+            div.style.backgroundColor = 'white';
+            div.style.padding = '10px';
+            div.style.border = '1px solid #ccc';
+            div.style.borderRadius = '5px';
+            div.style.direction = 'rtl';
+            div.style.textAlign = 'right';
+
+            // Add legend title
+            div.innerHTML = `<strong>${getServiceName(activeBudgetService)}</strong><br>`;
+            div.innerHTML += `<small>الميزانية المتاحة: $${activeBudgetAmount.toLocaleString()}</small><br>`;
+
+            // Add color squares and labels
+            div.innerHTML += 
+                `<i style="background:#31a354; width:18px; height:18px; display:inline-block; margin-left:8px; opacity:0.7;"></i> ` +
+                `يمكن إصلاحها ضمن الميزانية<br>` +
+                `<i style="background:#e5f5e0; width:18px; height:18px; display:inline-block; margin-left:8px; opacity:0.3;"></i> ` +
+                `لا يمكن إصلاحها ضمن الميزانية`;
+
+            return div;
+        };
+
+        legend.addTo(map);
+    }
+
+    /**
+     * Reset budget filter
+     */
+    function resetBudgetFilter() {
+        const neighborhoodLayer = layerControls['neighborhood'];
+        if (!neighborhoodLayer || !neighborhoodLayer.layer) {
+            return;
+        }
+
+        const geoJSONLayer = neighborhoodLayer.layer.getLayers()[0];
+
+        // Reset to default style
+        geoJSONLayer.setStyle(layerStyles['neighborhood']);
+
+        // Remove budget legend
+        const existingLegend = document.querySelector('.budget-legend');
+        if (existingLegend) {
+            existingLegend.remove();
+        }
+
+        // Reset the service select and budget amount
+        document.getElementById('budget-service-select').value = '';
+        document.getElementById('budget-amount').value = '';
+        activeBudgetService = null;
+        activeBudgetAmount = 0;
+        document.getElementById('apply-budget').disabled = true;
+
+        // Reset summary information
+        document.getElementById('affordable-count').textContent = '0';
+        document.getElementById('total-cost').textContent = '$0';
+
+        // Reset report table
+        updateBudgetReportTable();
+    }
+
+    /* ------ Budget Report Functions ------ */
+
+    /**
+     * Update the budget report table with current data
+     */
+    function updateBudgetReportTable() {
+        const tableBody = document.getElementById('budget-report-table');
+        if (!activeBudgetService || !activeBudgetAmount) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="3" class="text-center text-muted">لم يتم تطبيق أي ميزانية</td>
+                </tr>
+            `;
+            return;
+        }
+
+        const affordableCount = document.getElementById('affordable-count').textContent;
+        const totalCost = document.getElementById('total-cost').textContent;
+
+        tableBody.innerHTML = `
+            <tr>
+                <td>${getServiceName(activeBudgetService)}</td>
+                <td>${affordableCount}</td>
+                <td>${totalCost}</td>
+            </tr>
+        `;
+    }
+
+    /**
+     * Get the Arabic name for a service
+     */
+    function getServiceName(serviceKey) {
+        const serviceNames = {
+            'powerCost': 'الكهرباء',
+            'SMWCost': 'إدارة النفايات الصلبة',
+            'waterCost': 'المياه',
+            'housingCost': 'المساكن',
+            'telecomCost': 'الاتصالات',
+            'swageCost': 'الصرف الصحي'
+        };
+        return serviceNames[serviceKey] || serviceKey;
+    }
+
+    /**
+     * Generate budget report
+     */
+    function generateBudgetReport() {
+        const title = document.getElementById('budget-report-title').value;
+        const description = document.getElementById('budget-report-description').value;
+        const includeMap = document.getElementById('include-budget-map').checked;
+
+        if (!title) {
+            alert('الرجاء إدخال عنوان التقرير');
+            return;
+        }
+
+        // Create report content
+        let reportContent = `
+            <h2>${title}</h2>
+            <p>${description}</p>
+            <hr>
+            <h3>ملخص الميزانية</h3>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>الخدمة</th>
+                        <th>المناطق التي يمكن إصلاحها</th>
+                        <th>إجمالي التكلفة</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>${getServiceName(activeBudgetService)}</td>
+                        <td>${document.getElementById('affordable-count').textContent}</td>
+                        <td>${document.getElementById('total-cost').textContent}</td>
+                    </tr>
+                </tbody>
+            </table>
+        `;
+
+        // Add map if requested
+        if (includeMap) {
+            reportContent += `
+                <hr>
+                <h3>خريطة المناطق</h3>
+                <div class="text-center">
+                    <img src="${map.getContainer().toDataURL('image/png')}" class="img-fluid" alt="خريطة المناطق">
+                </div>
+            `;
+        }
+
+        // Create and open report in new window
+        const reportWindow = window.open('', '_blank');
+        reportWindow.document.write(`
+            <!DOCTYPE html>
+            <html dir="rtl">
+            <head>
+                <meta charset="UTF-8">
+                <title>${title}</title>
+                <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+                <style>
+                    body { padding: 20px; }
+                    table { margin: 20px 0; }
+                    img { max-width: 100%; height: auto; }
+                </style>
+            </head>
+            <body>
+                ${reportContent}
+            </body>
+            </html>
+        `);
+        reportWindow.document.close();
+    }
+
+    // Add event listeners for budget report
+    document.getElementById('generate-budget-report-btn').addEventListener('click', updateBudgetReportTable);
+    document.getElementById('create-budget-report-btn').addEventListener('click', generateBudgetReport);
+
+    // Add event listeners for budget planning
+    document.getElementById('budget-service-select').addEventListener('change', handleBudgetServiceSelect);
+    document.getElementById('budget-amount').addEventListener('input', handleBudgetAmountInput);
+    document.getElementById('apply-budget').addEventListener('click', applyBudgetFilter);
+    document.getElementById('reset-budget').addEventListener('click', resetBudgetFilter);
 })();
