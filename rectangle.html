@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>دار التقنية الحديثة | HI-Tech House</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -19,19 +20,16 @@
       border-radius: 12px;
       margin-bottom: 20px;
     }
-    h1 {
-      margin: 0;
-      font-size: 22px;
-    }
+    h1 { margin: 0; font-size: 22px; }
     .form-container {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 15px;
+      gap: 12px;
       background: #ffffffdd;
-      padding: 15px;
+      padding: 12px;
       border-radius: 12px;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
     label {
       flex: 1 1 120px;
@@ -45,32 +43,34 @@
       width: 100%;
       max-width: 120px;
       padding: 6px;
-      margin-top: 5px;
+      margin-top: 6px;
       border-radius: 8px;
       border: 1px solid #ccc;
       text-align: center;
     }
+    .canvas-wrap { display:flex; justify-content:center; }
     canvas {
       width: 100%;
-      max-width: 600px;
+      max-width: 700px;
       height: auto;
       border: 2px solid #004c99;
       border-radius: 12px;
       background: #fff;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
     }
     #info {
-      margin-top: 15px;
+      margin-top: 12px;
       font-size: 16px;
       background: #ffffffdd;
       display: inline-block;
-      padding: 12px 18px;
+      padding: 10px 14px;
       border-radius: 12px;
     }
     .highlight { color: #d32f2f; font-weight: bold; }
-    footer { margin-top: 20px; font-size: 14px; color: #555; }
+    footer { margin-top: 16px; font-size: 14px; color: #555; }
     @media (max-width: 600px) {
       h1 { font-size: 18px; }
-      .form-container { flex-direction: column; }
+      .form-container { flex-direction: column; gap: 8px; }
     }
   </style>
 </head>
@@ -87,14 +87,61 @@
     <label>ارتفاع المستطيل الأساسي:<input type="number" id="baseHeight" value="30"></label>
   </div>
 
-  <canvas id="canvas" width="700" height="500"></canvas>
+  <div class="canvas-wrap">
+    <canvas id="canvas" width="700" height="500"></canvas>
+  </div>
+
   <div id="info"></div>
 
   <footer>Ⓒ 2025 جميع الحقوق محفوظة - دار التقنية الحديثة | HI-Tech House</footer>
 
   <script>
-    const inputs = document.querySelectorAll("input");
-    inputs.forEach(input => input.addEventListener("input", drawRectangles));
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const inputs = document.querySelectorAll('input');
+    inputs.forEach(i => i.addEventListener('input', drawRectangles));
+    window.addEventListener('resize', () => { resizeCanvas(); drawRectangles(); });
+
+    // جعل الـ canvas متجاوب ويأخذ DPI المناسب
+    function resizeCanvas() {
+      const dpr = window.devicePixelRatio || 1;
+      // عرض CSS الذي سيستخدمه الرسم (حد أقصى 700px لتنسيق جيد)
+      const cssWidth = Math.min(700, document.body.clientWidth - 40);
+      const cssHeight = Math.max(220, Math.round(cssWidth * 0.65));
+      canvas.style.width = cssWidth + 'px';
+      canvas.style.height = cssHeight + 'px';
+      canvas.width = Math.round(cssWidth * dpr);
+      canvas.height = Math.round(cssHeight * dpr);
+      // ضبط الـ transform بحيث نرسم بوحدات CSS pixels
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    // دالة رسم التهشير داخل مربع مقطوع (باستخدام clip)
+    function hatchRect(x, y, w, h, gap = 8) {
+      if (w <= 0 || h <= 0) return;
+      // تعبئة خفيفة لتمييز المساحة الفارغة
+      ctx.fillStyle = 'rgba(211,47,47,0.06)'; // نفس لون الأحمر لكن شفاف
+      ctx.fillRect(x, y, w, h);
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(x, y, w, h);
+      ctx.clip();
+
+      ctx.strokeStyle = 'rgba(211,47,47,0.7)';
+      ctx.lineWidth = 1;
+
+      // نرسم خطوط مائلة من الأعلى (زاوية 45°) مع قص بالـ clip
+      // نبدأ من -h حتى w+h لضمان التغطية الكاملة داخل المربع
+      for (let i = -h; i < w + h; i += gap) {
+        ctx.beginPath();
+        ctx.moveTo(x + i, y);
+        ctx.lineTo(x + i + h, y + h);
+        ctx.stroke();
+      }
+
+      ctx.restore();
+    }
 
     function drawRectangles() {
       const mainW = +document.getElementById('mainWidth').value;
@@ -102,64 +149,83 @@
       const baseW = +document.getElementById('baseWidth').value;
       const baseH = +document.getElementById('baseHeight').value;
 
-      const canvas = document.getElementById('canvas');
-      const ctx = canvas.getContext('2d');
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
       if (!mainW || !mainH || !baseW || !baseH) return;
 
-      const scale = Math.min(canvas.width / (mainW + 40), canvas.height / (mainH + 80));
+      resizeCanvas(); // نتأكد من الحجم قبل الحساب
 
-      // المستطيل الأساسي (أحمر)
-      ctx.strokeStyle = "#d32f2f";
+      const dpr = window.devicePixelRatio || 1;
+      const displayW = canvas.width / dpr;
+      const displayH = canvas.height / dpr;
+
+      // هامش داخل الكانفاس
+      const marginX = 20;
+      const marginY = 20;
+
+      // مقياس الرسم بحيث يملأ الصندوق مع مراعاة الهوامش
+      const scale = Math.min((displayW - marginX*2) / mainW, (displayH - marginY*2) / mainH);
+
+      // مسح كامل
+      ctx.clearRect(0, 0, displayW, displayH);
+
+      // رسم المستطيل الأساسي باللون الأحمر
+      ctx.strokeStyle = '#d32f2f';
       ctx.lineWidth = 2;
-      ctx.strokeRect(20, 20, mainW * scale, mainH * scale);
+      ctx.strokeRect(marginX, marginY, mainW * scale, mainH * scale);
 
-      // تقسيم المستطيلات (أزرق)
+      // حساب عدد المستطيلات الداخلية
       const cols = Math.floor(mainW / baseW);
       const rows = Math.floor(mainH / baseH);
-      ctx.strokeStyle = "#0066cc";
-      ctx.fillStyle = "#0066cc";
-      ctx.font = `${10 * scale}px Arial`;
+
+      // رسم المستطيلات الداخلية باللون الأزرق
+      ctx.strokeStyle = '#0066cc';
+      ctx.lineWidth = 1;
+      ctx.font = `${10 * Math.max(0.8, scale)}px Arial`;
+      ctx.fillStyle = '#0066cc';
 
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
-          const x = 20 + c * baseW * scale;
-          const y = 20 + r * baseH * scale;
-          ctx.strokeRect(x, y, baseW * scale, baseH * scale);
+          const x = marginX + c * baseW * scale;
+          const y = marginY + r * baseH * scale;
+          const w = baseW * scale;
+          const h = baseH * scale;
+          ctx.strokeRect(x, y, w, h);
+          // خيار لإظهار القياس داخل المربعات إن رغبت
+          // ctx.fillText(`${baseW}×${baseH}`, x + w*0.08, y + h*0.55);
         }
       }
 
-      // تهشير المساحات الفارغة
-      const usedW = cols * baseW, usedH = rows * baseH;
-      ctx.strokeStyle = "rgba(0,0,0,0.3)";
-      ctx.lineWidth = 1;
-
-      function hatch(x, y, w, h) {
-        for (let i = x; i < x + w; i += 6) {
-          ctx.beginPath();
-          ctx.moveTo(i, y);
-          ctx.lineTo(i - h, y + h);
-          ctx.stroke();
-        }
-      }
-
-      if (mainW > usedW) {
-        hatch(20 + usedW * scale, 20, (mainW - usedW) * scale, mainH * scale);
-      }
-      if (mainH > usedH) {
-        hatch(20, 20 + usedH * scale, usedW * scale, (mainH - usedH) * scale);
-      }
-
-      // معلومات
+      // حساب المساحات المستخدمة والفارغة (بوحدات حقيقية)
+      const usedW = cols * baseW;
+      const usedH = rows * baseH;
       const emptyArea = (mainW * mainH) - (usedW * usedH);
-      document.getElementById("info").innerHTML = `
+
+      // مساحات فارغة على اليمين وأسفل (نرسمهما بالتهشير)
+      // المساحة اليمنى (إن وجدت)
+      if (mainW > usedW) {
+        const rx = marginX + usedW * scale;
+        const ry = marginY;
+        const rw = (mainW - usedW) * scale;
+        const rh = mainH * scale;
+        hatchRect(rx, ry, rw, rh, 7); // gap=7 => كثافة التهشير
+      }
+      // المساحة السفلية (إن وجدت) - نستخدم العرض الكامل لأن الحافة اليمنى قد تُغطى أيضاً
+      if (mainH > usedH) {
+        const bx = marginX;
+        const by = marginY + usedH * scale;
+        const bw = mainW * scale;
+        const bh = (mainH - usedH) * scale;
+        hatchRect(bx, by, bw, bh, 7);
+      }
+
+      // تحديث المعلومات النصية
+      document.getElementById('info').innerHTML = `
         🟦 عدد المستطيلات: ${cols} × ${rows} = <b>${cols * rows}</b><br>
         ✅ المساحة المغطاة: ${usedW * usedH} / ${mainW * mainH}<br>
         🟥 المساحة الفارغة: <span class="highlight">${emptyArea}</span>
       `;
     }
 
+    // بدء رسم أولي
     drawRectangles();
   </script>
 </body>
