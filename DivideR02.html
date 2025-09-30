@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>دار التقنية الحديثة</title>
+<style>
+  :root{
+    --bg:#e6f7ff;
+    --panel:#cfefff;
+    --card:#ffffff;
+    --accent:#3aa0ff;
+    --muted:#4b6b86;
+    --text:#052033;
+    --danger:#ef4444;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+    background: linear-gradient(180deg,#eaf6ff 0%, #dff3ff 100%);
+    color:var(--text); direction: rtl; -webkit-font-smoothing:antialiased;
+  }
+  header{padding:14px 18px; text-align:center;}
+  h1{margin:4px 0}
+  .wrap{display:flex; gap:18px; padding:12px; max-width:1300px; margin:0 auto 40px; align-items:flex-start;}
+  .panel{background:var(--card); border-radius:12px; padding:12px; box-shadow:0 6px 20px rgba(22,78,128,0.08);}
+  .controls{width:360px; min-width:280px; max-height:80vh; overflow:auto}
+  label{display:block; margin:8px 0; font-weight:600; color:var(--text)}
+  input[type="number"], select{padding:8px 10px; border-radius:8px; border:1px solid rgba(5,32,51,0.06); background:var(--panel); color:var(--text)}
+  .row{display:flex; gap:8px; align-items:center}
+  .piece-row{display:flex; gap:8px; margin-top:8px; align-items:center}
+  .piece-row input{width:88px}
+  .btn{padding:8px 12px; border-radius:8px; border:none; background:var(--accent); color:white; cursor:pointer}
+  .btn.ghost{background:transparent;color:var(--muted);border:1px solid rgba(5,32,51,0.06)}
+  .small{width:70px}
+  #canvasArea{flex:1; min-width:520px}
+  .canvases{display:grid; grid-template-columns: 1fr 1fr; gap:12px}
+  .canvas-wrap{padding:8px; background:linear-gradient(180deg,#f7fdff,#eaf7ff); border-radius:10px}
+  canvas{width:100%; height:auto; border-radius:8px; background:linear-gradient(180deg,#ffffff,#f0fbff); border:1px solid rgba(5,32,51,0.04)}
+  table{width:100%; border-collapse:collapse; margin-top:10px; font-size:13px}
+  th,td{padding:8px; border:1px solid rgba(5,32,51,0.06); text-align:center}
+  th{background:rgba(58,160,255,0.08)}
+  .legend{display:flex; gap:8px; flex-wrap:wrap; margin-top:8px}
+  .sw{width:18px;height:14px;border-radius:4px;border:1px solid rgba(0,0,0,0.06)}
+  .controls .hint{font-size:13px;color:var(--muted); margin-top:8px}
+  .error{color:var(--danger); font-weight:700}
+  @media (max-width:1000px){ .wrap{flex-direction:column} .canvases{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+<header>
+  <h1>تقسيم أمثلي للمستطيل</h1>
+  <div style="color:var(--muted)"></div>
+</header>
+
+<div class="wrap">
+  <div class="panel controls">
+    <label>أبعاد المستطيل الأساسي (px)</label>
+    <div class="row">
+      <input id="binW" type="number" value="600" min="1"> ×
+      <input id="binH" type="number" value="400" min="1">
+      <button id="fitBtn" class="btn ghost">تحديث</button>
+    </div>
+
+    <hr style="border:none;height:1px;background:rgba(5,32,51,0.04);margin:10px 0">
+
+    <div style="display:flex; justify-content:space-between; align-items:center">
+      <div style="font-weight:700">أنواع القطع</div>
+      <div>
+        <button id="addType" class="btn">➕ نوع</button>
+        <button id="clearTypes" class="btn ghost">مسح</button>
+      </div>
+    </div>
+    <div id="types" style="margin-top:8px"></div>
+
+    <div style="margin-top:10px">
+      <label><input id="allowRotate" type="checkbox"> السماح بتدوير 90°</label>
+      <label style="margin-top:6px">تهشير الفضلات <input id="showWaste" type="checkbox" checked style="margin-right:8px"></label>
+      <label style="margin-top:6px">تشغيل تحسين محلي بعد التعبئة <input id="doLocal" type="checkbox" checked style="margin-right:8px"></label>
+    </div>
+
+    <label style="margin-top:8px">المعايير (Heuristics) للمقارنة</label>
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+      <label><input class="heur" type="checkbox" value="bssf" checked> BSSF</label>
+      <label><input class="heur" type="checkbox" value="baf" checked> BAF</label>
+      <label><input class="heur" type="checkbox" value="blsf" checked> BLSF</label>
+      <label><input class="heur" type="checkbox" value="cpr" checked> CPR</label>
+    </div>
+
+    <div style="display:flex; gap:8px; margin-top:10px">
+      <button id="packAll" class="btn">▶ تعبئة ومقارنة</button>
+      <button id="exportJSON" class="btn ghost">⬇ JSON</button>
+      <button id="exportCSV" class="btn ghost">⬇ CSV</button>
+    </div>
+
+    <div id="msg" style="margin-top:8px"></div>
+  </div>
+
+  <div id="canvasArea" class="panel">
+    <div class="canvases" id="canvases"></div>
+    <div id="globalResults" style="margin-top:12px"></div>
+  </div>
+</div>
+
+<script>
+/* ---------------------------
+   UI: add/remove type rows
+   --------------------------- */
+let typeId = 0;
+const typesDiv = document.getElementById('types');
+const addTypeBtn = document.getElementById('addType');
+const clearTypesBtn = document.getElementById('clearTypes');
+
+function addTypeRow(w=100,h=80,n=10){
+  const id = typeId++;
+  const row = document.createElement('div');
+  row.className = 'piece-row';
+  row.dataset.id = id;
+  row.innerHTML = `
+    <input class="tW" type="number" value="${w}" min="1"> ×
+    <input class="tH" type="number" value="${h}" min="1">
+    <input class="tN" type="number" value="${n}" min="1">
+    <button class="rm" style="background:transparent;border:none;color:var(--danger)">✖</button>
+  `;
+  typesDiv.appendChild(row);
+  row.querySelector('.rm').onclick = () => row.remove();
+}
+addTypeBtn.onclick = ()=> addTypeRow(120,80,10);
+clearTypesBtn.onclick = ()=> { typesDiv.innerHTML=''; addTypeRow(120,80,10); addTypeRow(80,100,5); };
+
+/* ---------------------------
+   MaxRects Implementation
+   --------------------------- */
+function R(x,y,w,h){ return {x:x,y:y,width:w,height:h}; }
+function intersects(a,b){ return !(a.x>=b.x+b.width || a.x+a.width<=b.x || a.y>=b.y+b.height || a.y+a.height<=b.y); }
+function contains(a,b){ return a.x<=b.x && a.y<=b.y && a.x+a.width>=b.x+b.width && a.y+a.height>=b.y+b.height; }
+
+function MaxRectsBin(w,h){
+  this.binWidth = w; this.binHeight = h;
+  this.freeRects = [ R(0,0,w,h) ];
+  this.usedRects = []; // placed rects
+}
+
+/* splitFreeNode (robust): split any free rect overlapping with placed rect into up to 4 */
+MaxRectsBin.prototype.splitFreeNode = function(freeRect, placed){
+  let res = [];
+  if (!intersects(freeRect, placed)) { res.push(freeRect); return res; }
+
+  // top
+  if (placed.y > freeRect.y && placed.y < freeRect.y + freeRect.height){
+    res.push(R(freeRect.x, freeRect.y, freeRect.width, placed.y - freeRect.y));
+  }
+  // bottom
+  if (placed.y + placed.height < freeRect.y + freeRect.height){
+    res.push(R(freeRect.x, placed.y + placed.height, freeRect.width, (freeRect.y + freeRect.height) - (placed.y + placed.height)));
+  }
+  // left
+  if (placed.x > freeRect.x && placed.x < freeRect.x + freeRect.width){
+    const top = Math.max(freeRect.y, placed.y);
+    const bottom = Math.min(freeRect.y + freeRect.height, placed.y + placed.height);
+    res.push(R(freeRect.x, top, placed.x - freeRect.x, bottom - top));
+  }
+  // right
+  if (placed.x + placed.width < freeRect.x + freeRect.width){
+    const top = Math.max(freeRect.y, placed.y);
+    const bottom = Math.min(freeRect.y + freeRect.height, placed.y + placed.height);
+    res.push(R(placed.x + placed.width, top, (freeRect.x + freeRect.width) - (placed.x + placed.width), bottom - top));
+  }
+  // filter zero
+  return res.filter(r=> r.width>0 && r.height>0);
+};
+
+MaxRectsBin.prototype.place = function(node){
+  // remove/replace freeRects overlapping with node
+  let newFree = [];
+  for (let fr of this.freeRects){
+    if (intersects(fr, node)){
+      const splits = this.splitFreeNode(fr, node);
+      for (let s of splits) newFree.push(s);
+    } else {
+      newFree.push(fr);
+    }
+  }
+  this.freeRects = newFree;
+  this.prune();
+  this.usedRects.push(node);
+};
+
+MaxRectsBin.prototype.prune = function(){
+  // remove contained
+  for (let i=0;i<this.freeRects.length;i++){
+    for (let j=i+1;j<this.freeRects.length;j++){
+      const a = this.freeRects[i], b = this.freeRects[j];
+      if (!a||!b) continue;
+      if (contains(a,b)){ this.freeRects[j]=null; }
+      else if (contains(b,a)){ this.freeRects[i]=null; break; }
+    }
+  }
+  this.freeRects = this.freeRects.filter(r=>r);
+};
+
+/* heuristics scoring functions */
+function scoreBSSF(free,w,h){ const leftoverW = free.width - w; const leftoverH = free.height - h; return {score1: Math.min(leftoverW,leftoverH), score2: Math.max(leftoverW,leftoverH)}; }
+function scoreBLSF(free,w,h){ const leftoverW = free.width - w; const leftoverH = free.height - h; return {score1: Math.max(leftoverW,leftoverH), score2: Math.min(leftoverW,leftoverH)}; }
+function scoreBAF(free,w,h){ return {score1: free.width*free.height - w*h }; }
+function scoreCPR(bin, free, w,h){
+  // contact point: negative of contact length (we maximize contact)
+  const node = R(free.x, free.y, w, h);
+  let contact = 0;
+  for (let r of bin.usedRects){
+    if (r.x === node.x + node.width || r.x + r.width === node.x){
+      // vertical contact: overlap in y
+      const overlap = Math.max(0, Math.min(r.y + r.height, node.y + node.height) - Math.max(r.y, node.y));
+      contact += overlap;
+    }
+    if (r.y === node.y + node.height || r.y + r.height === node.y){
+      const overlap = Math.max(0, Math.min(r.x + r.width, node.x + node.width) - Math.max(r.x, node.x));
+      contact += overlap;
+    }
+  }
+  return {score1: -contact};
+}
+
+/* insert according to heuristic */
+MaxRectsBin.prototype.insertOne = function(w,h,allowRotate,heur){
+  let best = null, bestIdx = -1, bestRot=false, bestScore=null;
+  for (let i=0;i<this.freeRects.length;i++){
+    const free = this.freeRects[i];
+    // try normal
+    if (w <= free.width && h <= free.height){
+      let s;
+      if (heur==='bssf') s = scoreBSSF(free,w,h);
+      else if (heur==='blsf') s = scoreBLSF(free,w,h);
+      else if (heur==='baf') s = scoreBAF(free,w,h);
+      else if (heur==='cpr') s = scoreCPR(this, free,w,h);
+      if (isBetter(s, bestScore)){
+        bestScore = s; best = R(free.x, free.y, w, h); bestIdx = i; bestRot=false;
+      }
+    }
+    // try rotated
+    if (allowRotate && h <= free.width && w <= free.height){
+      let s;
+      if (heur==='bssf') s = scoreBSSF(free,h,w);
+      else if (heur==='blsf') s = scoreBLSF(free,h,w);
+      else if (heur==='baf') s = scoreBAF(free,h,w);
+      else if (heur==='cpr') s = scoreCPR(this, free,h,w);
+      if (isBetter(s, bestScore)){
+        bestScore = s; best = R(free.x, free.y, h, w); bestIdx = i; bestRot=true;
+      }
+    }
+  }
+  if (!best) return null;
+  this.place(best);
+  return {rect: best, rotated: bestRot};
+};
+
+function isBetter(s, best){
+  if (!s) return false;
+  if (!best) return true;
+  // compare vector-like scores: if object has score1 and score2 compare lexicographically, else numeric
+  if (typeof s.score1 !== 'undefined' && typeof best.score1 !== 'undefined'){
+    if (s.score1 !== best.score1) return s.score1 < best.score1;
+    if (typeof s.score2 !== 'undefined' && typeof best.score2 !== 'undefined') return s.score2 < best.score2;
+    return false;
+  } else {
+    return s.score1 < best.score1;
+  }
+}
+
+/* ---------------------------
+   Packing runner for a heuristic
+   --------------------------- */
+function gatherTypes(){
+  const rows = Array.from(document.querySelectorAll('#types .piece-row'));
+  let types = [];
+  for (let r of rows){
+    const w = parseInt(r.querySelector('.tW').value);
+    const h = parseInt(r.querySelector('.tH').value);
+    const n = parseInt(r.querySelector('.tN').value);
+    if (!w || !h || !n) continue;
+    types.push({w:h? w:0, h:h, n:n});
+  }
+  return types;
+}
+function expand(types){
+  let items = [];
+  for (let i=0;i<types.length;i++){
+    for (let k=0;k<types[i].n;k++){
+      items.push({typeIndex:i, w: types[i].w, h: types[i].h, id: `${i}_${k}`});
+    }
+  }
+  return items;
+}
+
+/* greedy pack */
+function packWithHeuristic(binW, binH, items, allowRotate, heur){
+  const bin = new MaxRectsBin(binW, binH);
+  const placements = [];
+  // sort items by area desc (heuristic helping)
+  items.sort((a,b)=> (b.w*b.h) - (a.w*a.h));
+  for (let it of items){
+    const res = bin.insertOne(it.w, it.h, allowRotate, heur);
+    if (res){
+      placements.push({item: it, rect: res.rect, rotated: res.rotated});
+    } else {
+      // skip
+    }
+  }
+  return {bin, placements};
+}
+
+/* ---------------------------
+   Local improvement (simple)
+   - Try rotating placed rectangles if fits better by rebuilding
+   - Try swapping order of two items (rebuild) if improves used area
+   --------------------------- */
+function localImprove(binW, binH, types, allowRotate, heur, initialPlacements){
+  // We'll attempt a few simple local operations:
+  // Operation A: for each placed item, try rotating it (if rotation allowed for that type) by rebuilding order: move that item first
+  let items = expand(types);
+  // initial used area:
+  let base = packWithHeuristic(binW, binH, items, allowRotate, heur);
+  let bestUsedArea = usedAreaFrom(base.placements);
+  let best = base;
+
+  // try limited number of perturbations for speed
+  const maxIters = Math.min(80, items.length * 2);
+  for (let iter=0; iter<maxIters; iter++){
+    // pick two random indices and swap their order then repack
+    const a = Math.floor(Math.random()*items.length);
+    const b = Math.floor(Math.random()*items.length);
+    if (a===b) continue;
+    const items2 = items.slice();
+    const tmp = items2[a]; items2[a] = items2[b]; items2[b] = tmp;
+    const cand = packWithHeuristic(binW, binH, items2, allowRotate, heur);
+    const ua = usedAreaFrom(cand.placements);
+    if (ua > bestUsedArea){
+      bestUsedArea = ua; best = cand;
+    }
+  }
+  return best;
+}
+function usedAreaFrom(placements){ return placements.reduce((s,p)=> s + p.rect.width * p.rect.height, 0); }
+
+/* ---------------------------
+   Rendering comparison canvases & interaction
+   --------------------------- */
+const canvasesContainer = document.getElementById('canvases');
+const packAllBtn = document.getElementById('packAll');
+const exportJSONBtn = document.getElementById('exportJSON');
+const exportCSVBtn = document.getElementById('exportCSV');
+const fitBtn = document.getElementById('fitBtn');
+
+let lastResults = {}; // keyed by heuristic -> {bin, placements, types}
+let activeCanvasState = null; // for drag interactions
+
+packAllBtn.onclick = runAll;
+exportJSONBtn.onclick = ()=> exportAll('json');
+exportCSVBtn.onclick = ()=> exportAll('csv');
+fitBtn.onclick = ()=> { if (activeCanvasState) drawCanvasState(activeCanvasState); };
+
+function runAll(){
+  document.getElementById('msg').textContent = '';
+  canvasesContainer.innerHTML = '';
+  lastResults = {};
+
+  const binW = parseInt(document.getElementById('binW').value);
+  const binH = parseInt(document.getElementById('binH').value);
+  const allowRotate = document.getElementById('allowRotate').checked;
+  const doLocal = document.getElementById('doLocal').checked;
+  const showWaste = document.getElementById('showWaste').checked;
+
+  if (!binW || !binH){ document.getElementById('msg').innerHTML = '<div class="error">أدخل أبعاد صحيحة.</div>'; return; }
+  const types = gatherTypes();
+  if (types.length===0){ document.getElementById('msg').innerHTML = '<div class="error">أدخل نوع قطعة واحد على الأقل.</div>'; return; }
+
+  const checked = Array.from(document.querySelectorAll('.heur:checked')).map(n=>n.value);
+  if (checked.length===0){ document.getElementById('msg').innerHTML = '<div class="error">اختر معياراً واحداً على الأقل.</div>'; return; }
+
+  // expand items
+  const items = expand(types);
+
+  // for each heuristic, run pack (optionally localImprove) and render canvas
+  for (let heur of checked){
+    // pack
+    let res = packWithHeuristic(binW, binH, items.slice(), allowRotate, heur);
+    // local improvement
+    if (doLocal){
+      const improved = localImprove(binW, binH, types, allowRotate, heur, res.placements);
+      if (usedAreaFrom(improved.placements) > usedAreaFrom(res.placements)) res = improved;
+    }
+    lastResults[heur] = {bin: res.bin, placements: res.placements, types: types};
+    createCanvasForHeuristic(heur, res.bin, res.placements, types, showWaste);
+  }
+
+  // show a summary comparison table
+  renderComparisonSummary();
+}
+
+/* create a canvas panel for a heuristic */
+function createCanvasForHeuristic(heur, bin, placements, types, showWaste){
+  const wrap = document.createElement('div');
+  wrap.className = 'canvas-wrap panel';
+  wrap.style.minHeight = '220px';
+  wrap.dataset.heur = heur;
+  wrap.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center">
+      <div style="font-weight:700">${heur.toUpperCase()}</div>
+      <div><button class="btn ghost exportImg">⬇ صورة</button></div>
+    </div>
+    <canvas data-heur="${heur}" width="640" height="420"></canvas>
+    <div class="legend"></div>`;
+  canvasesContainer.appendChild(wrap);
+
+  // draw
+  const cv = wrap.querySelector('canvas');
+  const ctx = cv.getContext('2d');
+  drawBinToCanvas(cv, ctx, bin, placements, types, showWaste);
+
+  // legend
+  const legendDiv = wrap.querySelector('.legend');
+  let legendHTML = '';
+  for (let i=0;i<types.length;i++){
+    legendHTML += `<div class="sw" style="background:${legendColor(i)};display:inline-block;margin:6px 8px;border-radius:4px"></div> T${i} (${types[i].w}×${types[i].h}) ×${types[i].n} &nbsp;`;
+  }
+  legendDiv.innerHTML = legendHTML;
+
+  // export image
+  wrap.querySelector('.exportImg').onclick = ()=> {
+    const link = document.createElement('a');
+    link.download = `packing_${heur}.png`;
+    link.href = cv.toDataURL('image/png');
+    link.click();
+  };
+
+  // add mouse interactions for drag/drop on this canvas
+  attachDragHandlers(cv, bin, placements, types);
+}
+
+/* drawing function (fits to canvas) */
+function drawBinToCanvas(cv, ctx, bin, placements, types, showWaste){
+  // clear
+  ctx.clearRect(0,0,cv.width,cv.height);
+  // background
+  ctx.fillStyle = '#f7fdff';
+  ctx.fillRect(0,0,cv.width,cv.height);
+  // scale and origin
+  const pad = 16;
+  const maxW = cv.width - pad*2;
+  const maxH = cv.height - pad*2;
+  const scale = Math.min(maxW / bin.binWidth, maxH / bin.binHeight, 1);
+  const originX = pad + (maxW - bin.binWidth*scale)/2;
+  const originY = pad + (maxH - bin.binHeight*scale)/2;
+
+  // draw bin border
+  ctx.save();
+  ctx.translate(originX, originY);
+  ctx.strokeStyle = '#0369a1';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(0,0,bin.binWidth*scale, bin.binHeight*scale);
+
+  // draw placements
+  ctx.font = `${Math.max(10, Math.floor(12*scale))}px Tahoma`;
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+  for (let p of placements){
+    const t = p.item.typeIndex;
+    ctx.fillStyle = legendColor(t);
+    ctx.strokeStyle = 'rgba(2,6,23,0.12)';
+    const x = p.rect.x * scale, y = p.rect.y * scale, w = p.rect.width * scale, h = p.rect.height * scale;
+    ctx.fillRect(x, y, w, h);
+    ctx.strokeRect(x, y, w, h);
+    ctx.fillStyle = '#012328';
+    ctx.fillText(`T${t}`, x + w/2, y + h/2);
+  }
+
+  // waste (freeRects)
+  if (showWaste){
+    ctx.fillStyle = 'rgba(2,30,50,0.12)';
+    // hatched pattern
+    const patC = document.createElement('canvas'); patC.width=8; patC.height=8;
+    const pctx = patC.getContext('2d'); pctx.strokeStyle='rgba(2,30,50,0.22)'; pctx.beginPath(); pctx.moveTo(0,8); pctx.lineTo(8,0); pctx.stroke();
+    const pat = ctx.createPattern(patC, 'repeat');
+    for (let fr of bin.freeRects){
+      const x = fr.x*scale, y = fr.y*scale, w = fr.width*scale, h = fr.height*scale;
+      ctx.save();
+      ctx.fillStyle = pat;
+      ctx.fillRect(x,y,w,h);
+      ctx.strokeStyle = 'rgba(2,30,50,0.08)';
+      ctx.strokeRect(x,y,w,h);
+      ctx.restore();
+    }
+  }
+
+  ctx.restore();
+}
+
+/* ---------------------------
+   Drag & drop interactions
+   - Each canvas has its own placements but we store references to the original placements array (so edits update lastResults)
+   --------------------------- */
+function attachDragHandlers(canvasEl, bin, placements, types){
+  const state = {
+    canvas: canvasEl, bin, placements, types,
+    scale:1, originX:0, originY:0,
+    dragging: null, offsetX:0, offsetY:0
+  };
+  // compute transform used in draw
+  function computeTransform(){
+    const pad = 16;
+    const maxW = canvasEl.width - pad*2;
+    const maxH = canvasEl.height - pad*2;
+    const scale = Math.min(maxW / bin.binWidth, maxH / bin.binHeight, 1);
+    const originX = pad + (maxW - bin.binWidth*scale)/2;
+    const originY = pad + (maxH - bin.binHeight*scale)/2;
+    state.scale = scale; state.originX = originX; state.originY = originY;
+  }
+  computeTransform();
+
+  function draw(){
+    drawBinToCanvas(canvasEl, canvasEl.getContext('2d'), bin, placements, types, document.getElementById('showWaste').checked);
+  }
+
+  function findRectAt(x,y){
+    // x,y in canvas coords; convert to bin coords
+    const bx = (x - state.originX)/state.scale;
+    const by = (y - state.originY)/state.scale;
+    for (let i=placements.length-1;i>=0;i--){ // top-down
+      const p = placements[i];
+      if (bx >= p.rect.x && bx <= p.rect.x + p.rect.width && by >= p.rect.y && by <= p.rect.y + p.rect.height){
+        return {p, idx:i};
+      }
+    }
+    return null;
+  }
+
+  let isDown = false;
+  canvasEl.addEventListener('pointerdown', (ev)=>{
+    computeTransform();
+    const r = canvasEl.getBoundingClientRect();
+    const x = ev.clientX - r.left, y = ev.clientY - r.top;
+    const hit = findRectAt(x,y);
+    if (hit){
+      isDown = true;
+      state.dragging = hit;
+      const bx = (x - state.originX)/state.scale;
+      const by = (y - state.originY)/state.scale;
+      state.offsetX = bx - hit.p.rect.x;
+      state.offsetY = by - hit.p.rect.y;
+      canvasEl.setPointerCapture(ev.pointerId);
+    }
+  });
+  canvasEl.addEventListener('pointermove', (ev)=>{
+    if (!isDown || !state.dragging) return;
+    const r = canvasEl.getBoundingClientRect();
+    const x = ev.clientX - r.left, y = ev.clientY - r.top;
+    const bx = (x - state.originX)/state.scale;
+    const by = (y - state.originY)/state.scale;
+    // candidate new pos
+    const p = state.dragging.p;
+    const idx = state.dragging.idx;
+    const newX = Math.max(0, Math.min(bin.binWidth - p.rect.width, bx - state.offsetX));
+    const newY = Math.max(0, Math.min(bin.binHeight - p.rect.height, by - state.offsetY));
+    // check overlap with others
+    const candRect = {x:newX, y:newY, width:p.rect.width, height:p.rect.height};
+    let overlap = false;
+    for (let j=0;j<placements.length;j++){
+      if (j===idx) continue;
+      if (intersects(candRect, placements[j].rect)){ overlap=true; break; }
+    }
+    if (!overlap){
+      p.rect.x = newX; p.rect.y = newY;
+      draw();
+      // update global results cache so export uses updated positions
+    }
+  });
+  canvasEl.addEventListener('pointerup', (ev)=>{
+    isDown=false; state.dragging=null;
+  });
+  canvasEl.addEventListener('pointerleave', ()=>{ isDown=false; state.dragging=null; });
+  // store active canvas state for fit button (optional)
+  canvasEl.addEventListener('click', ()=> { activeCanvasState = {bin, placements, types, canvas: canvasEl}; });
+}
+
+/* ---------------------------
+   Summary comparison table
+   --------------------------- */
+function renderComparisonSummary(){
+  const container = document.getElementById('globalResults');
+  let html = `<h3>مقارنة النتائج</h3><table><tr><th>Heuristic</th><th>المساحة المستعملة</th><th>المساحة الكُليّة</th><th>نسبة الاستغلال %</th><th>قطع لم توضع</th></tr>`;
+  for (let k in lastResults){
+    const r = lastResults[k];
+    const total = r.bin.binWidth * r.bin.binHeight;
+    const used = usedAreaFrom(r.placements);
+    // count unplaced per type
+    const placedCount = new Array(r.types.length).fill(0);
+    for (let p of r.placements) placedCount[p.item.typeIndex] += 1;
+    let unplaced = [];
+    for (let i=0;i<r.types.length;i++){
+      const left = Math.max(0, r.types[i].n - placedCount[i]);
+      if (left>0) unplaced.push(`T${i}:${left}`);
+    }
+    html += `<tr><td>${k.toUpperCase()}</td><td>${used}</td><td>${total}</td><td>${((used/total)*100).toFixed(2)}%</td><td>${unplaced.join(', ')||'—'}</td></tr>`;
+  }
+  html += `</table>`;
+  container.innerHTML = html;
+}
+
+/* ---------------------------
+   Export functions (JSON/CSV)
+   --------------------------- */
+function exportAll(format){
+  if (Object.keys(lastResults).length===0){ alert('نفّذ التعبئة أولاً.'); return; }
+  // choose the first heuristic as primary export (or merge all)
+  const key = Object.keys(lastResults)[0];
+  const r = lastResults[key];
+  // build data
+  const records = r.placements.map(p=>({
+    type: p.item.typeIndex,
+    w: p.rect.width, h: p.rect.height,
+    x: p.rect.x, y: p.rect.y,
+    rotated: !!p.rotated
+  }));
+  if (format==='json'){
+    const blob = new Blob([JSON.stringify({binW: r.bin.binWidth, binH: r.bin.binHeight, types: r.types, placements: records}, null, 2)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = 'packing_result.json'; a.click();
+    URL.revokeObjectURL(url);
+  } else {
+    // csv
+    let csv = 'type,w,h,x,y,rotated\n';
+    for (let rec of records) csv += `${rec.type},${rec.w},${rec.h},${rec.x},${rec.y},${rec.rotated}\n`;
+    const blob = new Blob([csv], {type:'text/csv'}); const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = 'packing_result.csv'; a.click();
+    URL.revokeObjectURL(url);
+  }
+}
+
+/* ---------------------------
+   Utilities
+   --------------------------- */
+function legendColor(i){
+  const hues = [200,185,170,150,130,110,90,60,40,20];
+  const h = hues[i % hues.length];
+  return `hsl(${h},70%,75%)`;
+}
+
+/* ---------------------------
+   Keyboard: Enter -> pack
+   --------------------------- */
+document.addEventListener('keydown', (e)=> { if (e.key==='Enter') runAll(); });
+
+</script>
+</body>
+</html>
