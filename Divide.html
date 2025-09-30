@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>تقسيم المستطيل - HI-tech House</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      direction: rtl;
+      text-align: center;
+      margin: 20px;
+    }
+    canvas {
+      border: 2px solid #333;
+      margin-top: 20px;
+      max-width: 100%;
+      height: auto;
+    }
+    .inputs {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 400px;
+      margin: auto;
+    }
+    input, button {
+      padding: 5px;
+      font-size: 16px;
+    }
+    .piece-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 5px;
+      margin-top: 5px;
+    }
+    table {
+      margin: 20px auto;
+      border-collapse: collapse;
+      width: 90%;
+    }
+    table, th, td {
+      border: 1px solid #444;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background: #f0f0f0;
+    }
+    #error {
+      color: red;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h2>تقسيم المستطيل - HI-tech House</h2>
+
+  <div class="inputs">
+    <label>عرض المستطيل الأساسي: <input type="number" id="rectWidth" value="500"></label>
+    <label>طول المستطيل الأساسي: <input type="number" id="rectHeight" value="300"></label>
+
+    <button onclick="addPiece()">➕ إضافة قطعة (عرض × طول)</button>
+    <div id="pieceInputs"></div>
+
+    <button onclick="draw()">🎨 تنفيذ التقسيم</button>
+    <div id="error"></div>
+  </div>
+
+  <canvas id="canvas" width="700" height="500"></canvas>
+
+  <div id="results"></div>
+
+  <script>
+    let pieceCounter = 0;
+
+    function addPiece() {
+      const container = document.getElementById("pieceInputs");
+      pieceCounter++;
+
+      const row = document.createElement("div");
+      row.className = "piece-row";
+      row.innerHTML = `
+        <input type="number" placeholder="عرض القطعة ${pieceCounter}" class="pieceW">
+        <input type="number" placeholder="طول القطعة ${pieceCounter}" class="pieceH">
+      `;
+      container.appendChild(row);
+    }
+
+    function draw() {
+      const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
+      const errorDiv = document.getElementById("error");
+      errorDiv.textContent = ""; // مسح الأخطاء القديمة
+
+      // المستطيل الأساسي
+      const rectWidth = parseInt(document.getElementById("rectWidth").value);
+      const rectHeight = parseInt(document.getElementById("rectHeight").value);
+
+      if (!rectWidth || !rectHeight || rectWidth <= 0 || rectHeight <= 0) {
+        errorDiv.textContent = "❌ الرجاء إدخال أبعاد صحيحة للمستطيل الأساسي.";
+        return;
+      }
+
+      // قراءة القطع
+      const widths = document.querySelectorAll(".pieceW");
+      const heights = document.querySelectorAll(".pieceH");
+
+      let totalWidth = 0;
+      for (let i = 0; i < widths.length; i++) {
+        const w = parseInt(widths[i].value);
+        if (w > 0) totalWidth += w;
+      }
+
+      if (totalWidth > rectWidth) {
+        errorDiv.textContent = "❌ مجموع عروض القطع يتجاوز عرض المستطيل الأساسي!";
+        return;
+      }
+
+      // مسح الكانفاس
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // رسم المستطيل الأساسي (الإطار الأحمر)
+      ctx.strokeStyle = "red";
+      ctx.lineWidth = 2;
+      ctx.strokeRect(50, 50, rectWidth, rectHeight);
+
+      let currentX = 50;
+      let results = [];
+
+      // ألوان الأعمدة
+      const colors = ["#ff9999","#99ccff","#99ff99","#ffcc99","#ccccff","#ffb3e6"];
+
+      for (let i = 0; i < widths.length; i++) {
+        const w = parseInt(widths[i].value);
+        const h = parseInt(heights[i].value);
+        if (!w || !h || w <= 0 || h <= 0) continue;
+
+        if (currentX + w > 50 + rectWidth) break;
+
+        // تلوين العمود كاملاً
+        ctx.fillStyle = colors[i % colors.length];
+        ctx.fillRect(currentX, 50, w, rectHeight);
+        ctx.strokeStyle = "black";
+        ctx.strokeRect(currentX, 50, w, rectHeight);
+
+        // تقسيم بالطول
+        let currentY = 50;
+        let count = 0;
+
+        ctx.strokeStyle = "blue";
+        while (currentY + h <= 50 + rectHeight) {
+          ctx.strokeRect(currentX, currentY, w, h);
+          currentY += h;
+          count++;
+        }
+
+        // الفضلات
+        let remainder = (50 + rectHeight) - currentY;
+        if (remainder > 0) {
+          ctx.fillStyle = "rgba(0,0,0,0.1)";
+          ctx.fillRect(currentX, currentY, w, remainder);
+
+          ctx.beginPath();
+          for (let y = currentY; y < 50 + rectHeight; y += 10) {
+            ctx.moveTo(currentX, y);
+            ctx.lineTo(currentX + w, y + 10);
+          }
+          ctx.strokeStyle = "gray";
+          ctx.stroke();
+        }
+
+        // حساب الكفاءة
+        let pieceArea = w * h;
+        let usedArea = count * pieceArea;
+        let columnArea = w * rectHeight;
+        let efficiency = ((usedArea / columnArea) * 100).toFixed(2);
+
+        results.push({
+          piece: `${w} × ${h}`,
+          count: count,
+          remainder: remainder,
+          efficiency: efficiency
+        });
+
+        currentX += w;
+      }
+
+      // عرض النتائج في جدول
+      let html = `<table>
+        <tr><th>القطعة (عرض × طول)</th><th>عدد القطع الكاملة</th><th>المساحة المتبقية (px)</th><th>الكفاءة %</th></tr>`;
+      results.forEach(r => {
+        html += `<tr>
+          <td>${r.piece}</td>
+          <td>${r.count}</td>
+          <td>${r.remainder}</td>
+          <td>${r.efficiency}%</td>
+        </tr>`;
+      });
+      html += `</table>`;
+      document.getElementById("results").innerHTML = html;
+    }
+  </script>
+</body>
+</html>
